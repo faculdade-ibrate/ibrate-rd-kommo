@@ -46,9 +46,15 @@ export async function syncConversion(conversion: ParsedRdConversion) {
     : undefined;
   if (company) await kommo.ensureCompanyLink("contacts", contact.id, company.id);
 
-  const existing = await kommo.findOpenProductLead(contact, pipelineId, route.product);
+  const existing = await kommo.findOpenProductLead(contact, pipelineId);
   if (existing) {
-    await kommo.updateLead(existing.id, statusId, mapped.fields, route.tags);
+    await kommo.updateLead(
+      existing.id,
+      route.leadName || `${conversion.name} | ${route.product}`,
+      statusId,
+      mapped.fields,
+      route.tags,
+    );
     if (company) await kommo.ensureCompanyLink("leads", existing.id, company.id);
     return {
       status: "updated" as const,

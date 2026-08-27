@@ -38,7 +38,7 @@ describe("roteamento da pré-matrícula Ibrate", () => {
     expect(routeForConversion(conversion("Cascavel"))).toMatchObject({
       pipelineName: "Funil Interior do PR",
       stageName: "NOVOS LEADS RD",
-      leadName: "Pré-matrícula | Reabilitação Neurofuncional Adulto: avaliação e tratamento | Rodrigo Bueno",
+      leadName: "Rodrigo Bueno | Reabilitação Neurofuncional Adulto: avaliação e tratamento | Cascavel",
     });
   });
 
@@ -93,7 +93,7 @@ describe("roteamento da pré-matrícula Ibrate", () => {
       source: "Landing Page",
       pipelineName: "Funil Interior do PR",
       stageName: "NOVOS LEADS RD",
-      leadName: "Pré-matrícula | Fisioterapia Respiratória | Rodrigo Bueno",
+      leadName: "Rodrigo Bueno | Fisioterapia Respiratória | Cascavel",
       tags: ["Pré-matrícula", "Agenda de Cursos"],
       derivedCustomFields: {
         Curso: "Fisioterapia Respiratória",

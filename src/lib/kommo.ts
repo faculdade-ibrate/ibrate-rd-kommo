@@ -144,7 +144,6 @@ export class KommoClient {
   async findOpenProductLead(
     contact: KommoContact,
     pipelineId: number,
-    product: string,
   ): Promise<KommoLead | undefined> {
     const ids = contact._embedded?.leads?.map((lead) => lead.id) ?? [];
     for (const id of ids.slice(-25).reverse()) {
@@ -153,7 +152,6 @@ export class KommoClient {
         lead
         && lead.pipeline_id === pipelineId
         && !lead.closed_at
-        && normalizeText(lead.name).startsWith(normalizeText(product))
       ) {
         return lead;
       }
@@ -199,10 +197,11 @@ export class KommoClient {
     return lead;
   }
 
-  async updateLead(id: number, statusId: number, customFields: KommoFieldValue[], tags: string[]): Promise<void> {
+  async updateLead(id: number, name: string, statusId: number, customFields: KommoFieldValue[], tags: string[]): Promise<void> {
     await this.request(`/leads/${id}`, {
       method: "PATCH",
       body: JSON.stringify({
+        name,
         status_id: statusId,
         custom_fields_values: customFields,
         _embedded: { tags: tags.map((name) => ({ name })) },
