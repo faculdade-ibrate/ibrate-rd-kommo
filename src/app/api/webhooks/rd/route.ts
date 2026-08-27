@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { conversionIdentifierFromContact, parseRdWebhook, sanitizedReceipt, unwrapRdAutomationPayload } from "@/lib/rd";
+import { agendaIdentifierFromContact, conversionIdentifierFromContact, parseRdWebhook, sanitizedReceipt, unwrapRdAutomationPayload } from "@/lib/rd";
 import { syncConversion } from "@/lib/sync";
 import { KommoError, safeKommoErrorDetail } from "@/lib/kommo";
 import { isAgendaEvent } from "@/config/products";
@@ -55,7 +55,7 @@ export async function handleRdWebhook(
     if (!isStandardWebhook && automationRoute) {
       const contact = unwrapRdAutomationPayload(record);
       const detectedIdentifier = automationRoute === "agendas"
-        ? conversionIdentifierFromContact(contact)
+        ? agendaIdentifierFromContact(contact) || conversionIdentifierFromContact(contact)
         : undefined;
       body = {
         event_type: "RD_AUTOMATION",

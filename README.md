@@ -7,7 +7,7 @@ Aplicação independente que recebe conversões do **Formulário de Pré-matríc
 - Evento RD: `Formulário de Pré-matrícula`.
 - Rota de automação: `pre-matricula`.
 - Canal automático das agendas: identificadores iniciados por `agenda-de-cursos-`.
-- A cidade é extraída de formatos como `agenda-de-cursos-em-cascavel` e `agenda-de-cursos-curitiba`.
+- A cidade é extraída de formatos como `agenda-de-cursos-em-cascavel`, `agenda-de-cursos-curitiba` e `agenda-de-pos-em-curitiba`.
 - `Curitiba` → `Funil Curitiba` → `NOVOS LEADS RD`.
 - `Chapecó`, `Balneário Camboriú` e `Joinville` → `Funil Santa Catarina` → `NOVOS LEADS RD`.
 - `Cascavel` e `Londrina` → `Funil Interior do PR` → `NOVOS LEADS RD`.
@@ -49,7 +49,7 @@ Para uma automação que reúne várias LPs de agenda, use na ação **Enviar Le
 https://SEU-PROJETO.vercel.app/api/webhooks/rd/agendas/SEU_SEGREDO
 ```
 
-Nesse formato, a aplicação lê o identificador da última conversão dentro do payload da automação e extrai a cidade. Ao incluir uma nova LP como entrada dessa automação, ela será reconhecida automaticamente se o identificador seguir o padrão `agenda-de-cursos-[cidade]` ou `agenda-de-cursos-em-[cidade]`.
+Nesse formato, a aplicação lê o identificador da última conversão dentro do payload da automação e extrai a cidade. Ao incluir uma nova LP como entrada dessa automação, ela será reconhecida automaticamente se o identificador seguir os padrões `agenda-de-cursos-[cidade]`, `agenda-de-cursos-em-[cidade]` ou `agenda-de-pos-em-[cidade]`.
 
 Para o webhook padrão de conversão:
 

@@ -20,6 +20,16 @@ const acceptedEvents = new Set([
   normalizeText("pre-matricula"),
 ]);
 
+const agendaUnits = new Map<string, string>([
+  [normalizeText("agenda-de-cursos-equilibra"), "Equilibra (CWB)"],
+  [normalizeText("agenda-de-pos-em-curitiba"), "Curitiba"],
+  [normalizeText("agenda-de-cursos-em-curitiba"), "Curitiba"],
+  [normalizeText("agenda-de-cursos-em-balneario-camboriu"), "Balneário Camboriú"],
+  [normalizeText("agenda-de-cursos-em-chapeco"), "Chapecó"],
+  [normalizeText("agenda-de-cursos-em-cascavel"), "Cascavel"],
+  [normalizeText("agenda-de-cursos-em-londrina"), "Londrina"],
+]);
+
 export function routeForConversion(conversion: ParsedRdConversion): ProductRoute | IgnoredRoute | undefined {
   const agendaUnit = agendaUnitFromEvent(conversion.eventIdentifier);
   if (!agendaUnit && !acceptedEvents.has(normalizeText(conversion.eventIdentifier))) return undefined;
@@ -74,7 +84,11 @@ export function isAgendaEvent(eventIdentifier: string): boolean {
 }
 
 function agendaUnitFromEvent(eventIdentifier: string): string | undefined {
-  const match = /^agenda de cursos (?:em )?(.+)$/.exec(normalizeText(eventIdentifier));
+  const normalizedEvent = normalizeText(eventIdentifier);
+  const configuredUnit = agendaUnits.get(normalizedEvent);
+  if (configuredUnit) return configuredUnit;
+
+  const match = /^agenda de (?:cursos|pos) (?:em )?(.+)$/.exec(normalizedEvent);
   if (!match) return undefined;
   const smallWords = new Set(["da", "das", "de", "do", "dos", "e"]);
   return match[1]

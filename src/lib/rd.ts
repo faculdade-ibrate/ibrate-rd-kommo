@@ -96,6 +96,19 @@ export function conversionIdentifierFromContact(contact: Record<string, unknown>
   return undefined;
 }
 
+export function agendaIdentifierFromContact(contact: Record<string, unknown>): string | undefined {
+  const lastConversion = findAgendaIdentifier(contact.last_conversion);
+  if (lastConversion) return lastConversion;
+
+  const { last_conversion: _last, first_conversion: _first, ...currentContact } = contact;
+  void _last;
+  void _first;
+  const current = findAgendaIdentifier(currentContact);
+  if (current) return current;
+
+  return findAgendaIdentifier(contact.first_conversion);
+}
+
 export function sanitizedReceipt(conversion: ParsedRdConversion) {
   return {
     eventIdentifier: conversion.eventIdentifier,
@@ -143,4 +156,37 @@ function identifierValue(value: Record<string, unknown>): string | undefined {
     if (candidate) return candidate;
   }
   return undefined;
+}
+
+function findAgendaIdentifier(value: unknown, depth = 0): string | undefined {
+  if (depth > 7 || value === null || value === undefined) return undefined;
+  if (typeof value === "string") {
+    const decoded = safelyDecode(value);
+    const match = /agenda-de-(?:cursos|pos)-(?:em-)?[\p{L}\p{N}-]+/iu.exec(decoded);
+    if (match) return match[0];
+    if ((decoded.startsWith("{") || decoded.startsWith("[")) && decoded.length < 100_000) {
+      try { return findAgendaIdentifier(JSON.parse(decoded), depth + 1); } catch { return undefined; }
+    }
+    return undefined;
+  }
+  if (Array.isArray(value)) {
+    for (const child of value) {
+      const found = findAgendaIdentifier(child, depth + 1);
+      if (found) return found;
+    }
+    return undefined;
+  }
+  if (typeof value === "object") {
+    for (const [key, child] of Object.entries(value as Record<string, unknown>)) {
+      const fromKey = findAgendaIdentifier(key, depth + 1);
+      if (fromKey) return fromKey;
+      const found = findAgendaIdentifier(child, depth + 1);
+      if (found) return found;
+    }
+  }
+  return undefined;
+}
+
+function safelyDecode(value: string): string {
+  try { return decodeURIComponent(value); } catch { return value; }
 }

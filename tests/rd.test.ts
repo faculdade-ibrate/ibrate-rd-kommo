@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { conversionIdentifierFromContact, parseRdWebhook, sanitizedReceipt, unwrapRdAutomationPayload } from "../src/lib/rd";
+import { agendaIdentifierFromContact, conversionIdentifierFromContact, parseRdWebhook, sanitizedReceipt, unwrapRdAutomationPayload } from "../src/lib/rd";
 
 describe("payload do RD", () => {
   it("extrai contato e campos personalizados sem expor valores no recibo", () => {
@@ -80,5 +80,28 @@ describe("payload do RD", () => {
     expect(conversionIdentifierFromContact({
       conversion_identifier: "agenda-de-cursos-curitiba",
     })).toBe("agenda-de-cursos-curitiba");
+  });
+
+  it("encontra o identificador da agenda dentro de URL, array ou texto JSON", () => {
+    expect(agendaIdentifierFromContact({
+      last_conversion: [{
+        conversion_url: "https://materiais.ibrate.edu.br/agenda-de-cursos-em-cascavel?utm_source=rd",
+      }],
+    })).toBe("agenda-de-cursos-em-cascavel");
+
+    expect(agendaIdentifierFromContact({
+      last_conversion: JSON.stringify({ content: { identificador: "agenda-de-cursos-curitiba" } }),
+    })).toBe("agenda-de-cursos-curitiba");
+
+    expect(agendaIdentifierFromContact({
+      last_conversion: { conversion_url: "https://materiais.ibrate.edu.br/agenda-de-pos-em-curitiba" },
+    })).toBe("agenda-de-pos-em-curitiba");
+  });
+
+  it("prioriza a última conversão sobre a primeira agenda do contato", () => {
+    expect(agendaIdentifierFromContact({
+      first_conversion: { content: { identificador: "agenda-de-cursos-em-curitiba" } },
+      last_conversion: { content: { identificador: "agenda-de-cursos-em-londrina" } },
+    })).toBe("agenda-de-cursos-em-londrina");
   });
 });

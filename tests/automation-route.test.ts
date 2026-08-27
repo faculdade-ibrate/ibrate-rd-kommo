@@ -110,9 +110,23 @@ describe("roteamento da pré-matrícula Ibrate", () => {
     });
   });
 
+  it("reconhece a agenda de pós de Curitiba", () => {
+    expect(routeForConversion(conversion("", "agenda-de-pos-em-curitiba"))).toMatchObject({
+      pipelineName: "Funil Curitiba",
+      derivedCustomFields: { Unidade: "Curitiba" },
+    });
+  });
+
+  it("reconhece Equilibra, mas mantém sem funil por enquanto", () => {
+    expect(routeForConversion(conversion("", "agenda-de-cursos-equilibra"))).toEqual({
+      ignoredReason: "Unidade sem funil configurado: Equilibra (CWB)",
+    });
+  });
+
   it("reconhece apenas identificadores de agenda válidos", () => {
     expect(isAgendaEvent("agenda-de-cursos-em-londrina")).toBe(true);
     expect(isAgendaEvent("agenda-de-cursos-sao-jose-dos-pinhais")).toBe(true);
+    expect(isAgendaEvent("agenda-de-pos-em-curitiba")).toBe(true);
     expect(isAgendaEvent("Formulário de Pré-matrícula")).toBe(false);
   });
 });
