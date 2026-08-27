@@ -138,7 +138,7 @@ function findNestedIdentifier(value: Record<string, unknown>, depth = 0): string
 }
 
 function identifierValue(value: Record<string, unknown>): string | undefined {
-  for (const key of ["conversion_identifier", "event_identifier", "identifier"]) {
+  for (const key of ["conversion_identifier", "event_identifier", "identifier", "identificador"]) {
     const candidate = String(value[key] ?? "").trim();
     if (candidate) return candidate;
   }

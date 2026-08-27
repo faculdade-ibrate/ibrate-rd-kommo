@@ -65,7 +65,7 @@ describe("payload do RD", () => {
         email: "teste@exemplo.com",
         last_conversion: {
           content: {
-            identifier: "agenda-de-cursos-em-cascavel",
+            identificador: "agenda-de-cursos-em-cascavel",
             type: "LANDING_PAGE",
           },
           conversion_origin: { source: "Tráfego Direto" },
