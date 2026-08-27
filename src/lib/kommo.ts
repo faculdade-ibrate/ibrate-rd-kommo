@@ -141,11 +141,22 @@ export class KommoClient {
     return this.request<KommoLead>(`/leads/${id}`, {}, 0, "consultar oportunidade");
   }
 
-  async findOpenProductLead(contact: KommoContact, pipelineId: number, product: string): Promise<KommoLead | undefined> {
+  async findOpenProductLead(
+    contact: KommoContact,
+    pipelineId: number,
+    product: string,
+    matchField: { fieldId: number; value: unknown },
+  ): Promise<KommoLead | undefined> {
     const ids = contact._embedded?.leads?.map((lead) => lead.id) ?? [];
     for (const id of ids.slice(-25).reverse()) {
       const lead = await this.getLead(id);
-      if (lead && lead.pipeline_id === pipelineId && !lead.closed_at && normalizeText(lead.name).startsWith(normalizeText(product))) {
+      if (
+        lead
+        && lead.pipeline_id === pipelineId
+        && !lead.closed_at
+        && normalizeText(lead.name).startsWith(normalizeText(product))
+        && leadHasCustomFieldValue(lead, matchField.fieldId, matchField.value)
+      ) {
         return lead;
       }
     }
@@ -200,6 +211,11 @@ export class KommoClient {
       }),
     }, 0, "atualizar oportunidade");
   }
+}
+
+export function leadHasCustomFieldValue(lead: KommoLead, fieldId: number, expected: unknown): boolean {
+  const field = lead.custom_fields_values?.find((item) => item.field_id === fieldId);
+  return (field?.values ?? []).some((item) => normalizeText(item.value) === normalizeText(expected));
 }
 
 export function safeKommoErrorDetail(detail: unknown): unknown {

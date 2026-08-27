@@ -36,6 +36,8 @@ export async function syncConversion(conversion: ParsedRdConversion) {
     ...utms,
     custom: { ...conversion.customFields, ...route.derivedCustomFields },
   });
+  const unitField = mapped.mappedFields.find((field) => field.name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() === "unidade");
+  if (!unitField) throw new Error("Campo personalizado Unidade não encontrado na Kommo; não é possível controlar duplicidades por cidade.");
 
   let contact = await kommo.findContact(conversion.phone, conversion.email);
   if (contact) await kommo.updateContact(contact.id, conversion.name, conversion.phone, conversion.email);
@@ -46,7 +48,10 @@ export async function syncConversion(conversion: ParsedRdConversion) {
     : undefined;
   if (company) await kommo.ensureCompanyLink("contacts", contact.id, company.id);
 
-  const existing = await kommo.findOpenProductLead(contact, pipelineId, route.product);
+  const existing = await kommo.findOpenProductLead(contact, pipelineId, route.product, {
+    fieldId: unitField.id,
+    value: route.unit,
+  });
   if (existing) {
     await kommo.updateLead(existing.id, statusId, mapped.fields, route.tags);
     if (company) await kommo.ensureCompanyLink("leads", existing.id, company.id);
