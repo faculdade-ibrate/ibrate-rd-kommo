@@ -6,6 +6,7 @@ import type { ParsedRdConversion } from "@/lib/rd";
 export async function syncConversion(conversion: ParsedRdConversion) {
   const route = routeForConversion(conversion);
   if (!route) return { status: "ignored" as const, reason: "Evento não mapeado" };
+  if ("ignoredReason" in route) return { status: "ignored" as const, reason: route.ignoredReason };
   if (!conversion.phone && !conversion.email) {
     throw new Error("Conversão sem telefone e sem e-mail; não é possível identificar o contato.");
   }

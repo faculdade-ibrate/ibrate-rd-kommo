@@ -13,12 +13,14 @@ export type ProductRoute = {
   derivedCustomFields?: Record<string, unknown>;
 };
 
+export type IgnoredRoute = { ignoredReason: string };
+
 const acceptedEvents = new Set([
   normalizeText("Formulário de Pré-matrícula"),
   normalizeText("pre-matricula"),
 ]);
 
-export function routeForConversion(conversion: ParsedRdConversion): ProductRoute | undefined {
+export function routeForConversion(conversion: ParsedRdConversion): ProductRoute | IgnoredRoute | undefined {
   const agendaUnit = agendaUnitFromEvent(conversion.eventIdentifier);
   if (!agendaUnit && !acceptedEvents.has(normalizeText(conversion.eventIdentifier))) return undefined;
 
@@ -27,13 +29,9 @@ export function routeForConversion(conversion: ParsedRdConversion): ProductRoute
     ? customValue(conversion.customFields, "Curso de interesse", "Curso", "Qual curso você está buscando?")
     : customValue(conversion.customFields, "Curso", "Qual curso você está buscando?", "Curso de interesse");
   if (!unit) throw new Error("Pré-matrícula sem Unidade; não é possível escolher o funil.");
-  const isCuritiba = normalizeText(unit) === "curitiba";
-  const pipelineName = isCuritiba
-    ? process.env.KOMMO_CURITIBA_PIPELINE_NAME || "Funil Curitiba"
-    : process.env.KOMMO_FILIAIS_PIPELINE_NAME || "Funil Filiais";
-  const stageName = isCuritiba
-    ? process.env.KOMMO_CURITIBA_ENTRY_STAGE_NAME || "NOVOS LEADS RD"
-    : process.env.KOMMO_FILIAIS_ENTRY_STAGE_NAME || "NOVOS LEADS RD";
+  const destination = destinationForUnit(unit);
+  if (!destination) return { ignoredReason: `Unidade sem funil configurado: ${unit}` };
+  const { pipelineName, stageName } = destination;
 
   return {
     product: "Pré-matrícula",
@@ -46,6 +44,29 @@ export function routeForConversion(conversion: ParsedRdConversion): ProductRoute
       : ["RD", "Site", "Pré-matrícula"],
     derivedCustomFields: agendaUnit ? { Curso: course, Unidade: unit } : undefined,
   };
+}
+
+function destinationForUnit(unit: string): { pipelineName: string; stageName: string } | undefined {
+  const normalizedUnit = normalizeText(unit);
+  if (normalizedUnit === "curitiba") {
+    return {
+      pipelineName: process.env.KOMMO_CURITIBA_PIPELINE_NAME || "Funil Curitiba",
+      stageName: process.env.KOMMO_CURITIBA_ENTRY_STAGE_NAME || "NOVOS LEADS RD",
+    };
+  }
+  if (["chapeco", "balneario camboriu", "joinville"].includes(normalizedUnit)) {
+    return {
+      pipelineName: process.env.KOMMO_SANTA_CATARINA_PIPELINE_NAME || "Funil Santa Catarina",
+      stageName: process.env.KOMMO_SANTA_CATARINA_ENTRY_STAGE_NAME || "NOVOS LEADS RD",
+    };
+  }
+  if (["cascavel", "londrina"].includes(normalizedUnit)) {
+    return {
+      pipelineName: process.env.KOMMO_INTERIOR_PR_PIPELINE_NAME || "Funil Interior do PR",
+      stageName: process.env.KOMMO_INTERIOR_PR_ENTRY_STAGE_NAME || "NOVOS LEADS RD",
+    };
+  }
+  return undefined;
 }
 
 export function isAgendaEvent(eventIdentifier: string): boolean {

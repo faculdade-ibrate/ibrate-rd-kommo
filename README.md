@@ -8,8 +8,10 @@ Aplicação independente que recebe conversões do **Formulário de Pré-matríc
 - Rota de automação: `pre-matricula`.
 - Canal automático das agendas: identificadores iniciados por `agenda-de-cursos-`.
 - A cidade é extraída de formatos como `agenda-de-cursos-em-cascavel` e `agenda-de-cursos-curitiba`.
-- Unidade `Curitiba` → `Funil Curitiba` → `NOVOS LEADS RD`.
-- Qualquer outra unidade → `Funil Filiais` → `NOVOS LEADS RD`.
+- `Curitiba` → `Funil Curitiba` → `NOVOS LEADS RD`.
+- `Chapecó`, `Balneário Camboriú` e `Joinville` → `Funil Santa Catarina` → `NOVOS LEADS RD`.
+- `Cascavel` e `Londrina` → `Funil Interior do PR` → `NOVOS LEADS RD`.
+- `Equilibra (CWB)` e cidades ainda não configuradas são ignoradas com o motivo registrado no log.
 - O contato é localizado por telefone ou e-mail para evitar duplicidade.
 - Nome da oportunidade: `Pré-matrícula | Curso | Nome`.
 - Campos personalizados da oportunidade: `Curso`, `Unidade`, `Data do Curso` e `Formação`.
@@ -24,7 +26,10 @@ Copie os nomes de `.env.example` para o projeto da Ibrate na Vercel.
 - `KOMMO_LONG_LIVED_TOKEN`: token de longa duração da conta Ibrate.
 - `RD_WEBHOOK_SECRET`: segredo longo e exclusivo deste webhook.
 - `KOMMO_CURITIBA_ENTRY_STAGE_NAME=NOVOS LEADS RD`: etapa inicial do Funil Curitiba.
-- `KOMMO_FILIAIS_ENTRY_STAGE_NAME=NOVOS LEADS RD`: etapa inicial do Funil Filiais.
+- `KOMMO_SANTA_CATARINA_PIPELINE_NAME=Funil Santa Catarina`
+- `KOMMO_SANTA_CATARINA_ENTRY_STAGE_NAME=NOVOS LEADS RD`
+- `KOMMO_INTERIOR_PR_PIPELINE_NAME=Funil Interior do PR`
+- `KOMMO_INTERIOR_PR_ENTRY_STAGE_NAME=NOVOS LEADS RD`
 - `KOMMO_SYNC_ENABLED=false`: modo seguro para validar o payload sem gravar na Kommo.
 
 Os nomes dos funis já possuem os padrões `Funil Curitiba` e `Funil Filiais`, mas também podem ser alterados pelas variáveis correspondentes.

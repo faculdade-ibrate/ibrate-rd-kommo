@@ -34,11 +34,37 @@ describe("roteamento da pré-matrícula Ibrate", () => {
     });
   });
 
-  it("envia Cascavel e demais unidades para o Funil Filiais", () => {
+  it("envia Cascavel para o Funil Interior do PR", () => {
     expect(routeForConversion(conversion("Cascavel"))).toMatchObject({
-      pipelineName: "Funil Filiais",
+      pipelineName: "Funil Interior do PR",
       stageName: "NOVOS LEADS RD",
       leadName: "Pré-matrícula | Reabilitação Neurofuncional Adulto: avaliação e tratamento | Rodrigo Bueno",
+    });
+  });
+
+  it.each(["Chapecó", "Balneário Camboriú", "Joinville"])(
+    "envia %s para o Funil Santa Catarina",
+    (unit) => {
+      expect(routeForConversion(conversion(unit))).toMatchObject({
+        pipelineName: "Funil Santa Catarina",
+        stageName: "NOVOS LEADS RD",
+      });
+    },
+  );
+
+  it.each(["Cascavel", "Londrina"])("envia %s para o Funil Interior do PR", (unit) => {
+    expect(routeForConversion(conversion(unit))).toMatchObject({
+      pipelineName: "Funil Interior do PR",
+      stageName: "NOVOS LEADS RD",
+    });
+  });
+
+  it("ignora Equilibra e unidades ainda não configuradas", () => {
+    expect(routeForConversion(conversion("Equilibra (CWB)"))).toEqual({
+      ignoredReason: "Unidade sem funil configurado: Equilibra (CWB)",
+    });
+    expect(routeForConversion(conversion("Nova unidade"))).toEqual({
+      ignoredReason: "Unidade sem funil configurado: Nova unidade",
     });
   });
 
@@ -54,7 +80,7 @@ describe("roteamento da pré-matrícula Ibrate", () => {
     expect(() => routeForConversion(conversion(""))).toThrow("sem Unidade");
   });
 
-  it("extrai Cascavel da agenda e envia para o Funil Filiais", () => {
+  it("extrai Cascavel da agenda e envia para o Funil Interior do PR", () => {
     const agenda = conversion("Unidade antiga", "agenda-de-cursos-em-cascavel");
     agenda.customFields = {
       cf_curso_de_interesse: "Fisioterapia Respiratória",
@@ -65,7 +91,7 @@ describe("roteamento da pré-matrícula Ibrate", () => {
 
     expect(routeForConversion(agenda)).toMatchObject({
       source: "Landing Page",
-      pipelineName: "Funil Filiais",
+      pipelineName: "Funil Interior do PR",
       stageName: "NOVOS LEADS RD",
       leadName: "Pré-matrícula | Fisioterapia Respiratória | Rodrigo Bueno",
       tags: ["RD", "Landing Page", "Agenda de Cursos", "Pré-matrícula"],

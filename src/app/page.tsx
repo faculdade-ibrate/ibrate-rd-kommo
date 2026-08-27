@@ -5,7 +5,9 @@ export default function Home() {
       <p>Integração privada do Formulário de Pré-matrícula.</p>
       <ul>
         <li><strong>Curitiba:</strong> Funil Curitiba</li>
-        <li><strong>Demais unidades:</strong> Funil Filiais</li>
+        <li><strong>Chapecó, Balneário Camboriú e Joinville:</strong> Funil Santa Catarina</li>
+        <li><strong>Cascavel e Londrina:</strong> Funil Interior do PR</li>
+        <li><strong>Equilibra (CWB):</strong> aguardando configuração</li>
       </ul>
       <p>Campos personalizados: Curso, Unidade, Data do Curso e Formação.</p>
       <p>Agendas de cursos: a unidade é identificada automaticamente pelo nome da Landing Page.</p>
