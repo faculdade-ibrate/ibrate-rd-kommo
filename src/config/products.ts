@@ -45,7 +45,7 @@ export function routeForConversion(conversion: ParsedRdConversion): ProductRoute
 
   return {
     product: "Pré-matrícula",
-    leadName: [conversion.name, course, unit].filter(Boolean).join(" | "),
+    leadName: [course, unit].filter(Boolean).join(" | "),
     source: agendaUnit ? "Landing Page" : "Site",
     pipelineName,
     stageName,
