@@ -17,6 +17,7 @@ Aplicação independente que recebe conversões do **Formulário de Pré-matríc
 - Campos personalizados da oportunidade: `Curso`, `Unidade`, `Data do Curso` e `Formação`.
 - Nas LPs de agenda, `curso_de_interesse` é gravado como `Curso`; `Unidade` é derivada do identificador e `Data do Curso` fica vazia quando não existir no formulário.
 - Tags: `RD`, `Site` e `Pré-matrícula`.
+- Nas agendas, as únicas tags enviadas são `Pré-matrícula` e `Agenda de Cursos`.
 
 ## Variáveis da Vercel
 

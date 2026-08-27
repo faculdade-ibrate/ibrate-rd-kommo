@@ -94,7 +94,7 @@ describe("roteamento da pré-matrícula Ibrate", () => {
       pipelineName: "Funil Interior do PR",
       stageName: "NOVOS LEADS RD",
       leadName: "Pré-matrícula | Fisioterapia Respiratória | Rodrigo Bueno",
-      tags: ["RD", "Landing Page", "Agenda de Cursos", "Pré-matrícula"],
+      tags: ["Pré-matrícula", "Agenda de Cursos"],
       derivedCustomFields: {
         Curso: "Fisioterapia Respiratória",
         Unidade: "Cascavel",

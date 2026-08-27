@@ -40,7 +40,7 @@ export function routeForConversion(conversion: ParsedRdConversion): ProductRoute
     pipelineName,
     stageName,
     tags: agendaUnit
-      ? ["RD", "Landing Page", "Agenda de Cursos", "Pré-matrícula"]
+      ? ["Pré-matrícula", "Agenda de Cursos"]
       : ["RD", "Site", "Pré-matrícula"],
     derivedCustomFields: agendaUnit ? { Curso: course, Unidade: unit } : undefined,
   };
