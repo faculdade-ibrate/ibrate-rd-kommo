@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseRdWebhook, sanitizedReceipt, unwrapRdAutomationPayload } from "../src/lib/rd";
+import { conversionIdentifierFromContact, parseRdWebhook, sanitizedReceipt, unwrapRdAutomationPayload } from "../src/lib/rd";
 
 describe("payload do RD", () => {
   it("extrai contato e campos personalizados sem expor valores no recibo", () => {
@@ -56,5 +56,29 @@ describe("payload do RD", () => {
     expect(parsed.phone).toBe("+5541988797301");
     expect(parsed.origin).toBe("Tráfego Direto");
     expect(parsed.customFields.cf_quantas_unidades_possui).toBe("4 a 10");
+  });
+
+  it("identifica a LP da agenda na última conversão da automação", () => {
+    const contact = unwrapRdAutomationPayload({
+      leads: [{
+        name: "Contato Teste",
+        email: "teste@exemplo.com",
+        last_conversion: {
+          content: {
+            identifier: "agenda-de-cursos-em-cascavel",
+            type: "LANDING_PAGE",
+          },
+          conversion_origin: { source: "Tráfego Direto" },
+        },
+      }],
+    });
+
+    expect(conversionIdentifierFromContact(contact)).toBe("agenda-de-cursos-em-cascavel");
+  });
+
+  it("aceita conversion_identifier direto quando a RD achata o payload", () => {
+    expect(conversionIdentifierFromContact({
+      conversion_identifier: "agenda-de-cursos-curitiba",
+    })).toBe("agenda-de-cursos-curitiba");
   });
 });

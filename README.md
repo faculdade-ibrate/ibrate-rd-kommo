@@ -42,6 +42,14 @@ Para o fluxo de automação **Enviar Leads para Integração** do RD:
 https://SEU-PROJETO.vercel.app/api/webhooks/rd/pre-matricula/SEU_SEGREDO
 ```
 
+Para uma automação que reúne várias LPs de agenda, use na ação **Enviar Leads para Integração**:
+
+```text
+https://SEU-PROJETO.vercel.app/api/webhooks/rd/agendas/SEU_SEGREDO
+```
+
+Nesse formato, a aplicação lê o identificador da última conversão dentro do payload da automação e extrai a cidade. Ao incluir uma nova LP como entrada dessa automação, ela será reconhecida automaticamente se o identificador seguir o padrão `agenda-de-cursos-[cidade]` ou `agenda-de-cursos-em-[cidade]`.
+
 Para o webhook padrão de conversão:
 
 ```text

@@ -83,6 +83,19 @@ export function unwrapRdAutomationPayload(body: Record<string, unknown>): Record
   return flattened;
 }
 
+export function conversionIdentifierFromContact(contact: Record<string, unknown>): string | undefined {
+  const direct = identifierValue(contact);
+  if (direct) return direct;
+
+  for (const key of ["last_conversion", "first_conversion"]) {
+    const conversion = contact[key];
+    if (!conversion || typeof conversion !== "object" || Array.isArray(conversion)) continue;
+    const found = findNestedIdentifier(conversion as Record<string, unknown>);
+    if (found) return found;
+  }
+  return undefined;
+}
+
 export function sanitizedReceipt(conversion: ParsedRdConversion) {
   return {
     eventIdentifier: conversion.eventIdentifier,
@@ -108,4 +121,26 @@ function legacyOrigin(contact: Record<string, unknown>): unknown {
   if (!conversion || typeof conversion !== "object" || Array.isArray(conversion)) return undefined;
   const data = conversion as Record<string, unknown>;
   return data.conversion_origin ?? data.source;
+}
+
+function findNestedIdentifier(value: Record<string, unknown>, depth = 0): string | undefined {
+  const direct = identifierValue(value);
+  if (direct) return direct;
+  if (depth >= 3) return undefined;
+
+  const children = [value.content, ...Object.values(value)];
+  for (const child of children) {
+    if (!child || typeof child !== "object" || Array.isArray(child)) continue;
+    const found = findNestedIdentifier(child as Record<string, unknown>, depth + 1);
+    if (found) return found;
+  }
+  return undefined;
+}
+
+function identifierValue(value: Record<string, unknown>): string | undefined {
+  for (const key of ["conversion_identifier", "event_identifier", "identifier"]) {
+    const candidate = String(value[key] ?? "").trim();
+    if (candidate) return candidate;
+  }
+  return undefined;
 }
