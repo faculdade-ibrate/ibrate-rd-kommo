@@ -28,15 +28,15 @@ export function routeForConversion(conversion: ParsedRdConversion): ProductRoute
     ? process.env.KOMMO_CURITIBA_PIPELINE_NAME || "Funil Curitiba"
     : process.env.KOMMO_FILIAIS_PIPELINE_NAME || "Funil Filiais";
   const stageName = isCuritiba
-    ? process.env.KOMMO_CURITIBA_ENTRY_STAGE_NAME
-    : process.env.KOMMO_FILIAIS_ENTRY_STAGE_NAME;
+    ? process.env.KOMMO_CURITIBA_ENTRY_STAGE_NAME || "NOVOS LEADS RD"
+    : process.env.KOMMO_FILIAIS_ENTRY_STAGE_NAME || "NOVOS LEADS RD";
 
   return {
     product: "Pré-matrícula",
     leadName: ["Pré-matrícula", course, conversion.name].filter(Boolean).join(" | "),
     source: "Site",
     pipelineName,
-    stageName: stageName || "",
+    stageName,
     tags: ["RD", "Site", "Pré-matrícula"],
   };
 }

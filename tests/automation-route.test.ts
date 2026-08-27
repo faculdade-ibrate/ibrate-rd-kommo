@@ -26,20 +26,18 @@ function conversion(unit: string, eventIdentifier = "Formulário de Pré-matríc
 
 describe("roteamento da pré-matrícula Ibrate", () => {
   it("envia Curitiba para o Funil Curitiba", () => {
-    process.env.KOMMO_CURITIBA_ENTRY_STAGE_NAME = "Novos leads";
     expect(routeForConversion(conversion("Curitiba"))).toMatchObject({
       product: "Pré-matrícula",
       pipelineName: "Funil Curitiba",
-      stageName: "Novos leads",
+      stageName: "NOVOS LEADS RD",
       tags: ["RD", "Site", "Pré-matrícula"],
     });
   });
 
   it("envia Cascavel e demais unidades para o Funil Filiais", () => {
-    process.env.KOMMO_FILIAIS_ENTRY_STAGE_NAME = "Novos leads";
     expect(routeForConversion(conversion("Cascavel"))).toMatchObject({
       pipelineName: "Funil Filiais",
-      stageName: "Novos leads",
+      stageName: "NOVOS LEADS RD",
       leadName: "Pré-matrícula | Reabilitação Neurofuncional Adulto: avaliação e tratamento | Rodrigo Bueno",
     });
   });
