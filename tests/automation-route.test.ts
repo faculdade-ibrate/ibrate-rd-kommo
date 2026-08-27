@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from "vitest";
-import { routeForConversion } from "../src/config/products";
+import { isAgendaEvent, routeForConversion } from "../src/config/products";
 import type { ParsedRdConversion } from "../src/lib/rd";
 
 const originalEnv = { ...process.env };
@@ -52,5 +52,41 @@ describe("roteamento da pré-matrícula Ibrate", () => {
 
   it("recusa pré-matrícula sem unidade", () => {
     expect(() => routeForConversion(conversion(""))).toThrow("sem Unidade");
+  });
+
+  it("extrai Cascavel da agenda e envia para o Funil Filiais", () => {
+    const agenda = conversion("Unidade antiga", "agenda-de-cursos-em-cascavel");
+    agenda.customFields = {
+      cf_curso_de_interesse: "Fisioterapia Respiratória",
+      cf_formacao: "Formação superior completa",
+      cf_unidade: "Unidade antiga",
+      cf_curso: "Curso antigo",
+    };
+
+    expect(routeForConversion(agenda)).toMatchObject({
+      source: "Landing Page",
+      pipelineName: "Funil Filiais",
+      stageName: "NOVOS LEADS RD",
+      leadName: "Pré-matrícula | Fisioterapia Respiratória | Rodrigo Bueno",
+      tags: ["RD", "Landing Page", "Agenda de Cursos", "Pré-matrícula"],
+      derivedCustomFields: {
+        Curso: "Fisioterapia Respiratória",
+        Unidade: "Cascavel",
+      },
+    });
+  });
+
+  it("aceita agenda sem 'em' e envia Curitiba para seu funil", () => {
+    const route = routeForConversion(conversion("", "agenda-de-cursos-curitiba"));
+    expect(route).toMatchObject({
+      pipelineName: "Funil Curitiba",
+      derivedCustomFields: { Unidade: "Curitiba" },
+    });
+  });
+
+  it("reconhece apenas identificadores de agenda válidos", () => {
+    expect(isAgendaEvent("agenda-de-cursos-em-londrina")).toBe(true);
+    expect(isAgendaEvent("agenda-de-cursos-sao-jose-dos-pinhais")).toBe(true);
+    expect(isAgendaEvent("Formulário de Pré-matrícula")).toBe(false);
   });
 });

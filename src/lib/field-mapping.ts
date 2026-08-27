@@ -20,6 +20,8 @@ const aliases: Record<string, string[]> = {
 const customAliases: Record<string, string[]> = {
   "de qual estado voce e": ["De qual Estado você é?", "De qual Estado você fala?", "Estado"],
   "de qual estado voce fala": ["De qual Estado você fala?", "De qual Estado você é?", "Estado"],
+  "curso de interesse": ["Curso"],
+  "qual curso voce esta buscando": ["Curso"],
 };
 
 export type SemanticLeadData = {

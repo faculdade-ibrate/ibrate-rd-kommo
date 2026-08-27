@@ -34,4 +34,22 @@ describe("mapeamento dos campos da pré-matrícula", () => {
       values: [{ value: "Formação superior completa" }],
     });
   });
+
+  it("mapeia curso_de_interesse das LPs para o campo Curso", () => {
+    const result = buildLeadCustomFields([
+      { id: 1, name: "Curso", type: "text" },
+      { id: 2, name: "Unidade", type: "text" },
+    ], {
+      product: "Pré-matrícula",
+      source: "Landing Page",
+      event: "agenda-de-cursos-em-cascavel",
+      custom: {
+        cf_curso_de_interesse: "Fisioterapia Respiratória",
+        Unidade: "Cascavel",
+      },
+    });
+
+    expect(result.fields).toContainEqual({ field_id: 1, values: [{ value: "Fisioterapia Respiratória" }] });
+    expect(result.fields).toContainEqual({ field_id: 2, values: [{ value: "Cascavel" }] });
+  });
 });

@@ -8,6 +8,7 @@ export default function Home() {
         <li><strong>Demais unidades:</strong> Funil Filiais</li>
       </ul>
       <p>Campos personalizados: Curso, Unidade, Data do Curso e Formação.</p>
+      <p>Agendas de cursos: a unidade é identificada automaticamente pelo nome da Landing Page.</p>
     </main>
   );
 }

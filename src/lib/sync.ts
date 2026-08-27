@@ -33,7 +33,7 @@ export async function syncConversion(conversion: ParsedRdConversion) {
     eventDate: conversion.eventTimestamp,
     rdUuid: conversion.rdContactUuid,
     ...utms,
-    custom: conversion.customFields,
+    custom: { ...conversion.customFields, ...route.derivedCustomFields },
   });
 
   let contact = await kommo.findContact(conversion.phone, conversion.email);

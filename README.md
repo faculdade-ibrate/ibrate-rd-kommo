@@ -1,16 +1,19 @@
 # Faculdade Ibrate · RD Station → Kommo
 
-Aplicação independente que recebe a conversão do **Formulário de Pré-matrícula** do RD Station e cria ou atualiza o contato e a oportunidade na conta `ibrate.kommo.com`.
+Aplicação independente que recebe conversões do **Formulário de Pré-matrícula** e das **Agendas de Cursos** do RD Station e cria ou atualiza o contato e a oportunidade na conta `ibrate.kommo.com`.
 
 ## Regras atuais
 
 - Evento RD: `Formulário de Pré-matrícula`.
 - Rota de automação: `pre-matricula`.
+- Canal automático das agendas: identificadores iniciados por `agenda-de-cursos-`.
+- A cidade é extraída de formatos como `agenda-de-cursos-em-cascavel` e `agenda-de-cursos-curitiba`.
 - Unidade `Curitiba` → `Funil Curitiba` → `NOVOS LEADS RD`.
 - Qualquer outra unidade → `Funil Filiais` → `NOVOS LEADS RD`.
 - O contato é localizado por telefone ou e-mail para evitar duplicidade.
 - Nome da oportunidade: `Pré-matrícula | Curso | Nome`.
 - Campos personalizados da oportunidade: `Curso`, `Unidade`, `Data do Curso` e `Formação`.
+- Nas LPs de agenda, `curso_de_interesse` é gravado como `Curso`; `Unidade` é derivada do identificador e `Data do Curso` fica vazia quando não existir no formulário.
 - Tags: `RD`, `Site` e `Pré-matrícula`.
 
 ## Variáveis da Vercel
@@ -39,6 +42,14 @@ Para o webhook padrão de conversão:
 ```text
 https://SEU-PROJETO.vercel.app/api/webhooks/rd?secret=SEU_SEGREDO
 ```
+
+Para o webhook exclusivo das agendas, configure o evento **Conversão**, sem filtrar conversões específicas, usando:
+
+```text
+https://SEU-PROJETO.vercel.app/api/webhooks/rd/agendas/SEU_SEGREDO
+```
+
+Esse canal ignora qualquer conversão que não tenha um identificador iniciado por `agenda-de-cursos-`. Assim, novas agendas que seguirem o padrão de nomenclatura serão reconhecidas sem alteração no código ou na automação de pré-matrícula.
 
 Depois de confirmar o recibo em modo seguro, altere `KOMMO_SYNC_ENABLED` para `true` e faça um novo deploy.
 

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { parseRdWebhook, sanitizedReceipt, unwrapRdAutomationPayload } from "@/lib/rd";
 import { syncConversion } from "@/lib/sync";
 import { KommoError, safeKommoErrorDetail } from "@/lib/kommo";
+import { isAgendaEvent } from "@/config/products";
 
 export const runtime = "nodejs";
 export const maxDuration = 30;
@@ -43,6 +44,13 @@ export async function handleRdWebhook(
     const record = body as Record<string, unknown>;
     const automationRoute = pathCredentials?.route || request.nextUrl.searchParams.get("route")?.trim();
     const isStandardWebhook = "event_identifier" in record && "contact" in record;
+
+    if (isStandardWebhook && automationRoute === "agendas") {
+      const eventIdentifier = String(record.event_identifier ?? "");
+      if (!isAgendaEvent(eventIdentifier)) {
+        return NextResponse.json({ ok: true, status: "ignored", reason: "Conversão não pertence às agendas" });
+      }
+    }
 
     if (!isStandardWebhook && automationRoute) {
       const contact = unwrapRdAutomationPayload(record);
