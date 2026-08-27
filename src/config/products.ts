@@ -5,7 +5,6 @@ export type Source = "Site" | "Landing Page" | "RD Station";
 
 export type ProductRoute = {
   product: string;
-  unit: string;
   leadName?: string;
   source: Source;
   pipelineName: string;
@@ -36,7 +35,6 @@ export function routeForConversion(conversion: ParsedRdConversion): ProductRoute
 
   return {
     product: "Pré-matrícula",
-    unit,
     leadName: ["Pré-matrícula", course, conversion.name].filter(Boolean).join(" | "),
     source: agendaUnit ? "Landing Page" : "Site",
     pipelineName,

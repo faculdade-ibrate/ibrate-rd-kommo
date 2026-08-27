@@ -12,7 +12,7 @@ Aplicação independente que recebe conversões do **Formulário de Pré-matríc
 - `Chapecó`, `Balneário Camboriú` e `Joinville` → `Funil Santa Catarina` → `NOVOS LEADS RD`.
 - `Cascavel` e `Londrina` → `Funil Interior do PR` → `NOVOS LEADS RD`.
 - `Equilibra (CWB)` e cidades ainda não configuradas são ignoradas com o motivo registrado no log.
-- O contato é localizado por telefone ou e-mail. Uma oportunidade aberta só é atualizada quando também pertence à mesma unidade; outra cidade cria uma nova oportunidade, mesmo dentro do mesmo funil regional.
+- O contato é localizado por telefone ou e-mail. Uma oportunidade aberta é unificada por funil regional: cidades da mesma região atualizam a mesma oportunidade; uma região diferente cria outra.
 - Nome da oportunidade: `Pré-matrícula | Curso | Nome`.
 - Campos personalizados da oportunidade: `Curso`, `Unidade`, `Data do Curso` e `Formação`.
 - Nas LPs de agenda, `curso_de_interesse` é gravado como `Curso`; `Unidade` é derivada do identificador e `Data do Curso` fica vazia quando não existir no formulário.
