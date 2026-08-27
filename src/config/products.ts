@@ -84,12 +84,14 @@ function agendaUnitFromEvent(eventIdentifier: string): string | undefined {
 }
 
 function customValue(fields: Record<string, unknown>, ...names: string[]): string | undefined {
-  const wanted = new Set(names.map(normalizeText));
-  for (const [key, value] of Object.entries(fields)) {
-    const cleanKey = key.replace(/^cf_/, "").replace(/_/g, " ");
-    if (!wanted.has(normalizeText(cleanKey))) continue;
-    const text = String(Array.isArray(value) ? value[0] ?? "" : value ?? "").trim();
-    return text || undefined;
+  for (const name of names) {
+    const wanted = normalizeText(name);
+    for (const [key, value] of Object.entries(fields)) {
+      const cleanKey = key.replace(/^cf_/, "").replace(/_/g, " ");
+      if (normalizeText(cleanKey) !== wanted) continue;
+      const text = String(Array.isArray(value) ? value[0] ?? "" : value ?? "").trim();
+      if (text) return text;
+    }
   }
   return undefined;
 }

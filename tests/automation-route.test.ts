@@ -83,10 +83,10 @@ describe("roteamento da pré-matrícula Ibrate", () => {
   it("extrai Cascavel da agenda e envia para o Funil Interior do PR", () => {
     const agenda = conversion("Unidade antiga", "agenda-de-cursos-em-cascavel");
     agenda.customFields = {
+      cf_curso: "Curso antigo",
+      cf_unidade: "Unidade antiga",
       cf_curso_de_interesse: "Fisioterapia Respiratória",
       cf_formacao: "Formação superior completa",
-      cf_unidade: "Unidade antiga",
-      cf_curso: "Curso antigo",
     };
 
     expect(routeForConversion(agenda)).toMatchObject({
