@@ -39,6 +39,7 @@ export type SemanticLeadData = {
   utmContent?: unknown;
   utmTerm?: unknown;
   custom: Record<string, unknown>;
+  clearCustomFields?: string[];
 };
 
 export function buildLeadCustomFields(fields: KommoCustomField[], data: SemanticLeadData) {
@@ -46,6 +47,18 @@ export function buildLeadCustomFields(fields: KommoCustomField[], data: Semantic
   const output: KommoFieldValue[] = [];
   const mappedFields: Array<{ id: number; name: string; type: string }> = [];
   const claimed = new Set<number>();
+  const fieldsToClear: KommoFieldValue[] = [];
+  const clearFieldIds = new Set<number>();
+
+  for (const name of data.clearCustomFields ?? []) {
+    const field = findField(fields, [name]);
+    if (!field) {
+      warnings.push(`Campo para limpeza não encontrado na Kommo: ${name}`);
+      continue;
+    }
+    clearFieldIds.add(field.id);
+    fieldsToClear.push({ field_id: field.id, values: null });
+  }
 
   for (const [semantic, names] of Object.entries(aliases)) {
     const value = data[semantic as keyof Omit<SemanticLeadData, "custom">];
@@ -68,6 +81,7 @@ export function buildLeadCustomFields(fields: KommoCustomField[], data: Semantic
     const cleanRdKey = rdKey.replace(/^cf_/, "").replace(/_/g, " ");
     const candidateNames = [cleanRdKey, rdKey, ...(customAliases[normalizeText(cleanRdKey)] ?? [])];
     const field = findField(fields, candidateNames);
+    if (field && clearFieldIds.has(field.id)) continue;
     if (!field || claimed.has(field.id)) {
       if (!field) warnings.push(`Campo RD sem correspondente na Kommo: ${rdKey}`);
       continue;
@@ -81,7 +95,7 @@ export function buildLeadCustomFields(fields: KommoCustomField[], data: Semantic
     else warnings.push(`Valor não compatível com ${field.name}: ${String(value)}`);
   }
 
-  return { fields: output, mappedFields, warnings };
+  return { fields: output, fieldsToClear, mappedFields, warnings };
 }
 
 function findField(fields: KommoCustomField[], names: string[]): KommoCustomField | undefined {

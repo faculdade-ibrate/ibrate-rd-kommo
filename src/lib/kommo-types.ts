@@ -1,7 +1,7 @@
 export type KommoFieldValue = {
   field_id?: number;
   field_code?: string;
-  values: Array<{ value: unknown; enum_id?: number; enum_code?: string }>;
+  values: Array<{ value: unknown; enum_id?: number; enum_code?: string }> | null;
 };
 
 export type KommoCustomField = {

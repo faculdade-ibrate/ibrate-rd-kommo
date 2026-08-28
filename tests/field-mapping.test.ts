@@ -39,6 +39,7 @@ describe("mapeamento dos campos da pré-matrícula", () => {
     const result = buildLeadCustomFields([
       { id: 1, name: "Curso", type: "text" },
       { id: 2, name: "Unidade", type: "text" },
+      { id: 3, name: "Data do Curso", type: "date" },
     ], {
       product: "Pré-matrícula",
       source: "Landing Page",
@@ -46,10 +47,14 @@ describe("mapeamento dos campos da pré-matrícula", () => {
       custom: {
         cf_curso_de_interesse: "Fisioterapia Respiratória",
         Unidade: "Cascavel",
+        cf_data_do_curso: "12/09/2026",
       },
+      clearCustomFields: ["Data do Curso"],
     });
 
     expect(result.fields).toContainEqual({ field_id: 1, values: [{ value: "Fisioterapia Respiratória" }] });
     expect(result.fields).toContainEqual({ field_id: 2, values: [{ value: "Cascavel" }] });
+    expect(result.fields).not.toContainEqual(expect.objectContaining({ field_id: 3 }));
+    expect(result.fieldsToClear).toEqual([{ field_id: 3, values: null }]);
   });
 });

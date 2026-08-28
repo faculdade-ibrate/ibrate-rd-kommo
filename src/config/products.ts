@@ -11,6 +11,7 @@ export type ProductRoute = {
   stageName: string;
   tags: string[];
   derivedCustomFields?: Record<string, unknown>;
+  clearCustomFields?: string[];
 };
 
 export type IgnoredRoute = { ignoredReason: string };
@@ -53,6 +54,7 @@ export function routeForConversion(conversion: ParsedRdConversion): ProductRoute
       ? ["Pré-matrícula", "Agenda de Cursos"]
       : ["RD", "Site", "Pré-matrícula"],
     derivedCustomFields: agendaUnit ? { Curso: course, Unidade: unit } : undefined,
+    clearCustomFields: agendaUnit ? ["Data do Curso"] : undefined,
   };
 }
 

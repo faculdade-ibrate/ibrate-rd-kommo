@@ -99,6 +99,7 @@ describe("roteamento da pré-matrícula Ibrate", () => {
         Curso: "Fisioterapia Respiratória",
         Unidade: "Cascavel",
       },
+      clearCustomFields: ["Data do Curso"],
     });
   });
 

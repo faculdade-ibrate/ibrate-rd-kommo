@@ -35,6 +35,7 @@ export async function syncConversion(conversion: ParsedRdConversion) {
     rdUuid: conversion.rdContactUuid,
     ...utms,
     custom: { ...conversion.customFields, ...route.derivedCustomFields },
+    clearCustomFields: route.clearCustomFields,
   });
 
   let contact = await kommo.findContact(conversion.phone, conversion.email);
@@ -52,7 +53,7 @@ export async function syncConversion(conversion: ParsedRdConversion) {
       existing.id,
       route.leadName || `${conversion.name} | ${route.product}`,
       statusId,
-      mapped.fields,
+      [...mapped.fields, ...mapped.fieldsToClear],
       route.tags,
     );
     if (company) await kommo.ensureCompanyLink("leads", existing.id, company.id);
