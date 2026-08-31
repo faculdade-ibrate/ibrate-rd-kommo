@@ -204,7 +204,10 @@ export class KommoClient {
         name,
         status_id: statusId,
         custom_fields_values: customFields,
-        _embedded: { tags: tags.map((name) => ({ name })) },
+        _embedded: {
+          tags_to_add: tags.map((name) => ({ name })),
+          tags_to_delete: [{ name: "RD" }],
+        },
       }),
     }, 0, "atualizar oportunidade");
   }

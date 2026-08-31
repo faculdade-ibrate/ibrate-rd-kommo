@@ -30,7 +30,7 @@ describe("roteamento da pré-matrícula Ibrate", () => {
       product: "Pré-matrícula",
       pipelineName: "Funil Curitiba",
       stageName: "NOVOS LEADS RD",
-      tags: ["RD", "Site", "Pré-matrícula"],
+      tags: ["Site", "Pré-matrícula"],
     });
   });
 
@@ -89,7 +89,7 @@ describe("roteamento da pré-matrícula Ibrate", () => {
       pipelineName: "Funil Equilibra",
       stageName: "NOVOS LEADS RD",
       leadName: "Acupuntura | Equilibra (Curitiba)",
-      tags: ["RD", "Site", "WhatsApp"],
+      tags: ["Site", "WhatsApp"],
       derivedCustomFields: {
         Curso: "Acupuntura",
         Unidade: "Equilibra (Curitiba)",
@@ -140,7 +140,7 @@ describe("roteamento da pré-matrícula Ibrate", () => {
       pipelineName: "Funil Equilibra",
       stageName: "NOVOS LEADS RD",
       leadName: "Pós-Graduação e MBA em Cosmetologia e Inovação de Cosméticos | Equilibra (Curitiba)",
-      tags: ["RD", "Site", "Pré-inscrição", "Equilibra"],
+      tags: ["Site", "Pré-inscrição", "Equilibra"],
       derivedCustomFields: {
         Curso: "Pós-Graduação e MBA em Cosmetologia e Inovação de Cosméticos",
         Unidade: "Equilibra (Curitiba)",
@@ -151,9 +151,9 @@ describe("roteamento da pré-matrícula Ibrate", () => {
   });
 
   it.each([
-    ["pre-inscricao-equilibra", "Pré-inscrição Equilibra", ["RD", "Site", "Pré-inscrição", "Equilibra"]],
-    ["contato-equilibra", "Contato Equilibra", ["RD", "Site", "Contato", "Equilibra"]],
-    ["Contato Equiliba", "Contato Equilibra", ["RD", "Site", "Contato", "Equilibra"]],
+    ["pre-inscricao-equilibra", "Pré-inscrição Equilibra", ["Site", "Pré-inscrição", "Equilibra"]],
+    ["contato-equilibra", "Contato Equilibra", ["Site", "Contato", "Equilibra"]],
+    ["Contato Equiliba", "Contato Equilibra", ["Site", "Contato", "Equilibra"]],
   ])("envia %s com Mensagem para o Funil Equilibra", (eventIdentifier, title, tags) => {
     const contact = conversion("Unidade antiga", eventIdentifier);
     contact.customFields = {
@@ -193,7 +193,7 @@ describe("roteamento da pré-matrícula Ibrate", () => {
       pipelineName: "Funil Equilibra",
       stageName: "NOVOS LEADS RD",
       leadName: "Acupuntura | Equilibra (Curitiba)",
-      tags: ["RD", "Site", "WhatsApp", "Equilibra"],
+      tags: ["Site", "WhatsApp", "Equilibra"],
       derivedCustomFields: {
         Curso: "Acupuntura",
         Unidade: "Equilibra (Curitiba)",

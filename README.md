@@ -25,10 +25,12 @@ Aplicação independente que recebe conversões do **Formulário de Pré-matríc
 - Na `Pré inscrição cursos`, `Curso de Interesse` é gravado como `Curso`, a unidade é fixada como `Equilibra (Curitiba)` e `Mensagem` é ignorada.
 - Em `Pré inscrição Equilibra` e `Contato Equilibra`, somente `Mensagem` é gravada como campo personalizado; a unidade é fixada como `Equilibra (Curitiba)` e dados históricos de curso, formação e data são ignorados.
 - No `whatsapp-site-equilibra`, `Qual curso você está buscando?` é gravado como `Curso`; a unidade é fixada como `Equilibra (Curitiba)` e dados históricos são ignorados.
-- Tags: `RD`, `Site` e `Pré-matrícula`.
+- Tags da pré-matrícula: `Site` e `Pré-matrícula`.
 - Nas agendas, as únicas tags enviadas são `Pré-matrícula` e `Agenda de Cursos`.
-- No `whatsapp-site`, as tags enviadas são `RD`, `Site` e `WhatsApp`.
-- Na `Pré inscrição cursos`, as tags enviadas são `RD`, `Site`, `Pré-inscrição` e `Equilibra`.
+- No `whatsapp-site`, as tags enviadas são `Site` e `WhatsApp`.
+- Nas pré-inscrições da Equilibra, as tags enviadas são `Site`, `Pré-inscrição` e `Equilibra`.
+- Nos contatos da Equilibra, as tags enviadas são `Site`, `Contato` e `Equilibra`.
+- No `whatsapp-site-equilibra`, as tags enviadas são `Site`, `WhatsApp` e `Equilibra`.
 
 ## Variáveis da Vercel
 

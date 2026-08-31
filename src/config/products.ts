@@ -116,14 +116,14 @@ export function routeForConversion(conversion: ParsedRdConversion): ProductRoute
     tags: agendaUnit
       ? ["Pré-matrícula", "Agenda de Cursos"]
       : isEquilibraPreRegistration || isEquilibraGeneralPreRegistration
-        ? ["RD", "Site", "Pré-inscrição", "Equilibra"]
+        ? ["Site", "Pré-inscrição", "Equilibra"]
       : isEquilibraMessageForm
-        ? ["RD", "Site", "Contato", "Equilibra"]
+        ? ["Site", "Contato", "Equilibra"]
       : isEquilibraWhatsapp
-        ? ["RD", "Site", "WhatsApp", "Equilibra"]
+        ? ["Site", "WhatsApp", "Equilibra"]
       : isWhatsappSite
-        ? ["RD", "Site", "WhatsApp"]
-        : ["RD", "Site", "Pré-matrícula"],
+        ? ["Site", "WhatsApp"]
+        : ["Site", "Pré-matrícula"],
     derivedCustomFields: agendaUnit || isWhatsappSite || isEquilibraPreRegistration || isEquilibraMessageForm || isEquilibraWhatsapp
       ? { Curso: course, Unidade: unit }
       : undefined,
