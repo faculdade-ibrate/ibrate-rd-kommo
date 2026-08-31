@@ -7,6 +7,7 @@ Aplicação independente que recebe conversões do **Formulário de Pré-matríc
 - Evento RD: `Formulário de Pré-matrícula`.
 - Evento RD do WhatsApp: `whatsapp-site`.
 - Evento RD da Equilibra: `Pré inscrição cursos` (rota `pre-inscricao-cursos`).
+- Formulários gerais da Equilibra: `Pré inscrição Equilibra` e `Contato Equiliba`/`Contato Equilibra`.
 - Rota de automação: `pre-matricula`.
 - Canal automático das agendas: identificadores iniciados por `agenda-de-cursos-`.
 - A cidade é extraída de formatos como `agenda-de-cursos-em-cascavel`, `agenda-de-cursos-curitiba` e `agenda-de-pos-em-curitiba`.
@@ -21,6 +22,7 @@ Aplicação independente que recebe conversões do **Formulário de Pré-matríc
 - Nas LPs de agenda, `curso_de_interesse` é gravado como `Curso`; `Unidade` é derivada do identificador e `Data do Curso` fica vazia quando não existir no formulário.
 - No evento `whatsapp-site`, `Qual curso você está buscando?` e `Unidade da sua escolha` têm prioridade sobre dados históricos da RD; `Data do Curso` é limpa por não existir nesse formulário.
 - Na `Pré inscrição cursos`, `Curso de Interesse` é gravado como `Curso`, a unidade é fixada como `Equilibra (Curitiba)` e `Mensagem` é ignorada.
+- Em `Pré inscrição Equilibra` e `Contato Equilibra`, somente `Mensagem` é gravada como campo personalizado; a unidade é fixada como `Equilibra (Curitiba)` e dados históricos de curso, formação e data são ignorados.
 - Tags: `RD`, `Site` e `Pré-matrícula`.
 - Nas agendas, as únicas tags enviadas são `Pré-matrícula` e `Agenda de Cursos`.
 - No `whatsapp-site`, as tags enviadas são `RD`, `Site` e `WhatsApp`.
@@ -62,6 +64,13 @@ Para a automação separada da Equilibra, com entrada no formulário **Pré insc
 
 ```text
 https://SEU-PROJETO.vercel.app/api/webhooks/rd/pre-inscricao-cursos/SEU_SEGREDO
+```
+
+Para os dois formulários gerais da Equilibra, use automações separadas:
+
+```text
+https://SEU-PROJETO.vercel.app/api/webhooks/rd/pre-inscricao-equilibra/SEU_SEGREDO
+https://SEU-PROJETO.vercel.app/api/webhooks/rd/contato-equilibra/SEU_SEGREDO
 ```
 
 Nesse formato, a aplicação lê o identificador da última conversão dentro do payload da automação e extrai a cidade. Ao incluir uma nova LP como entrada dessa automação, ela será reconhecida automaticamente se o identificador seguir os padrões `agenda-de-cursos-[cidade]`, `agenda-de-cursos-em-[cidade]` ou `agenda-de-pos-em-[cidade]`.

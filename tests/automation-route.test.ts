@@ -137,6 +137,34 @@ describe("roteamento da pré-matrícula Ibrate", () => {
     });
   });
 
+  it.each([
+    ["pre-inscricao-equilibra", "Pré-inscrição Equilibra", ["RD", "Site", "Pré-inscrição", "Equilibra"]],
+    ["contato-equilibra", "Contato Equilibra", ["RD", "Site", "Contato", "Equilibra"]],
+    ["Contato Equiliba", "Contato Equilibra", ["RD", "Site", "Contato", "Equilibra"]],
+  ])("envia %s com Mensagem para o Funil Equilibra", (eventIdentifier, title, tags) => {
+    const contact = conversion("Unidade antiga", eventIdentifier);
+    contact.customFields = {
+      Mensagem: "Olá",
+      Curso: "Curso histórico",
+      Unidade: "Unidade histórica",
+      "Data do Curso": "12/09/2026",
+    };
+
+    expect(routeForConversion(contact)).toMatchObject({
+      product: title,
+      source: "Site",
+      pipelineName: "Funil Equilibra",
+      stageName: "NOVOS LEADS RD",
+      leadName: `${title} | Equilibra (Curitiba)`,
+      tags,
+      derivedCustomFields: {
+        Unidade: "Equilibra (Curitiba)",
+      },
+      clearCustomFields: ["Data do Curso"],
+      customFieldNames: ["Mensagem"],
+    });
+  });
+
   it("ignora outros formulários", () => {
     expect(routeForConversion(conversion("Curitiba", "Outro formulário"))).toBeUndefined();
   });

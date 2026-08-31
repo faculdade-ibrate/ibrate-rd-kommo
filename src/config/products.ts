@@ -23,11 +23,29 @@ const acceptedEvents = new Set([
   normalizeText("whatsapp-site"),
   normalizeText("Pré inscrição cursos"),
   normalizeText("pre-inscricao-cursos"),
+  normalizeText("Pré inscrição Equilibra"),
+  normalizeText("pre-inscricao-equilibra"),
+  normalizeText("Contato Equiliba"),
+  normalizeText("Contato Equilibra"),
+  normalizeText("contato-equilibra"),
 ]);
 
 const equilibraPreRegistrationEvents = new Set([
   normalizeText("Pré inscrição cursos"),
   normalizeText("pre-inscricao-cursos"),
+]);
+
+const equilibraMessageFormEvents = new Set([
+  normalizeText("Pré inscrição Equilibra"),
+  normalizeText("pre-inscricao-equilibra"),
+  normalizeText("Contato Equiliba"),
+  normalizeText("Contato Equilibra"),
+  normalizeText("contato-equilibra"),
+]);
+
+const equilibraGeneralPreRegistrationEvents = new Set([
+  normalizeText("Pré inscrição Equilibra"),
+  normalizeText("pre-inscricao-equilibra"),
 ]);
 
 const agendaUnits = new Map<string, string>([
@@ -45,10 +63,12 @@ export function routeForConversion(conversion: ParsedRdConversion): ProductRoute
   const normalizedEvent = normalizeText(conversion.eventIdentifier);
   const isWhatsappSite = normalizedEvent === normalizeText("whatsapp-site");
   const isEquilibraPreRegistration = equilibraPreRegistrationEvents.has(normalizedEvent);
+  const isEquilibraMessageForm = equilibraMessageFormEvents.has(normalizedEvent);
+  const isEquilibraGeneralPreRegistration = equilibraGeneralPreRegistrationEvents.has(normalizedEvent);
   if (!agendaUnit && !acceptedEvents.has(normalizedEvent)) return undefined;
 
   const unit = agendaUnit
-    || (isEquilibraPreRegistration ? "Equilibra (Curitiba)" : undefined)
+    || (isEquilibraPreRegistration || isEquilibraMessageForm ? "Equilibra (Curitiba)" : undefined)
     || (isWhatsappSite
       ? customValue(conversion.customFields, "Unidade da sua escolha", "Unidade")
       : customValue(conversion.customFields, "Unidade"));
@@ -56,41 +76,52 @@ export function routeForConversion(conversion: ParsedRdConversion): ProductRoute
     ? customValue(conversion.customFields, "Curso de interesse", "Curso", "Qual curso você está buscando?")
     : isEquilibraPreRegistration
       ? customValue(conversion.customFields, "Curso de Interesse", "Título da página")
-    : isWhatsappSite
-      ? customValue(conversion.customFields, "Qual curso você está buscando?", "Curso de interesse", "Curso")
-      : customValue(conversion.customFields, "Curso", "Qual curso você está buscando?", "Curso de interesse");
+      : isEquilibraMessageForm
+        ? undefined
+        : isWhatsappSite
+          ? customValue(conversion.customFields, "Qual curso você está buscando?", "Curso de interesse", "Curso")
+          : customValue(conversion.customFields, "Curso", "Qual curso você está buscando?", "Curso de interesse");
+  const leadSubject = course
+    || (isEquilibraGeneralPreRegistration ? "Pré-inscrição Equilibra" : undefined)
+    || (isEquilibraMessageForm ? "Contato Equilibra" : undefined);
   if (!unit) throw new Error("Pré-matrícula sem Unidade; não é possível escolher o funil.");
   const destination = destinationForUnit(unit);
   if (!destination) return { ignoredReason: `Unidade sem funil configurado: ${unit}` };
   const { pipelineName, stageName } = destination;
 
   return {
-    product: isEquilibraPreRegistration
+    product: isEquilibraPreRegistration || isEquilibraGeneralPreRegistration
       ? "Pré-inscrição Equilibra"
+      : isEquilibraMessageForm
+        ? "Contato Equilibra"
       : isWhatsappSite
         ? "WhatsApp Site"
         : "Pré-matrícula",
-    leadName: [course, unit].filter(Boolean).join(" | "),
+    leadName: [leadSubject, unit].filter(Boolean).join(" | "),
     source: agendaUnit ? "Landing Page" : "Site",
     pipelineName,
     stageName,
     tags: agendaUnit
       ? ["Pré-matrícula", "Agenda de Cursos"]
-      : isEquilibraPreRegistration
+      : isEquilibraPreRegistration || isEquilibraGeneralPreRegistration
         ? ["RD", "Site", "Pré-inscrição", "Equilibra"]
+      : isEquilibraMessageForm
+        ? ["RD", "Site", "Contato", "Equilibra"]
       : isWhatsappSite
         ? ["RD", "Site", "WhatsApp"]
         : ["RD", "Site", "Pré-matrícula"],
-    derivedCustomFields: agendaUnit || isWhatsappSite || isEquilibraPreRegistration
+    derivedCustomFields: agendaUnit || isWhatsappSite || isEquilibraPreRegistration || isEquilibraMessageForm
       ? { Curso: course, Unidade: unit }
       : undefined,
-    clearCustomFields: agendaUnit || isWhatsappSite || isEquilibraPreRegistration
+    clearCustomFields: agendaUnit || isWhatsappSite || isEquilibraPreRegistration || isEquilibraMessageForm
       ? ["Data do Curso"]
       : undefined,
     customFieldNames: agendaUnit
       ? ["Curso de interesse", "Formação"]
       : isEquilibraPreRegistration
         ? ["Curso de Interesse"]
+        : isEquilibraMessageForm
+          ? ["Mensagem"]
         : isWhatsappSite
           ? ["Qual curso você está buscando?", "Unidade da sua escolha"]
           : ["Curso", "Unidade", "Data do Curso", "Formação"],
