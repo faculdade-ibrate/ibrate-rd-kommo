@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from "vitest";
-import { isAgendaEvent, routeForConversion } from "../src/config/products";
+import { isAgendaEvent, isEquilibraEvent, routeForConversion } from "../src/config/products";
 import type { ParsedRdConversion } from "../src/lib/rd";
 
 const originalEnv = { ...process.env };
@@ -165,6 +165,31 @@ describe("roteamento da pré-matrícula Ibrate", () => {
     });
   });
 
+  it("envia whatsapp-site-equilibra com unidade fixa para a Equilibra", () => {
+    const whatsapp = conversion("Unidade histórica", "whatsapp-site-equilibra");
+    whatsapp.customFields = {
+      Curso: "Curso histórico",
+      Unidade: "Unidade histórica",
+      "Data do Curso": "12/09/2026",
+      "Qual curso você está buscando?": "Acupuntura",
+    };
+
+    expect(routeForConversion(whatsapp)).toMatchObject({
+      product: "WhatsApp Equilibra",
+      source: "Site",
+      pipelineName: "Funil Equilibra",
+      stageName: "NOVOS LEADS RD",
+      leadName: "Acupuntura | Equilibra (Curitiba)",
+      tags: ["RD", "Site", "WhatsApp", "Equilibra"],
+      derivedCustomFields: {
+        Curso: "Acupuntura",
+        Unidade: "Equilibra (Curitiba)",
+      },
+      clearCustomFields: ["Data do Curso"],
+      customFieldNames: ["Qual curso você está buscando?"],
+    });
+  });
+
   it("ignora outros formulários", () => {
     expect(routeForConversion(conversion("Curitiba", "Outro formulário"))).toBeUndefined();
   });
@@ -224,5 +249,20 @@ describe("roteamento da pré-matrícula Ibrate", () => {
     expect(isAgendaEvent("agenda-de-cursos-sao-jose-dos-pinhais")).toBe(true);
     expect(isAgendaEvent("agenda-de-pos-em-curitiba")).toBe(true);
     expect(isAgendaEvent("Formulário de Pré-matrícula")).toBe(false);
+  });
+
+  it.each([
+    "Pré inscrição cursos",
+    "Pré inscrição Equilibra",
+    "Contato Equiliba",
+    "whatsapp-site-equilibra",
+    "agenda-de-cursos-equilibra",
+  ])("reconhece %s no canal agrupado da Equilibra", (eventIdentifier) => {
+    expect(isEquilibraEvent(eventIdentifier)).toBe(true);
+  });
+
+  it("rejeita eventos da Ibrate no canal agrupado da Equilibra", () => {
+    expect(isEquilibraEvent("whatsapp-site")).toBe(false);
+    expect(isEquilibraEvent("agenda-de-cursos-em-cascavel")).toBe(false);
   });
 });

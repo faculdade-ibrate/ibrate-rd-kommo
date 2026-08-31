@@ -28,6 +28,7 @@ const acceptedEvents = new Set([
   normalizeText("Contato Equiliba"),
   normalizeText("Contato Equilibra"),
   normalizeText("contato-equilibra"),
+  normalizeText("whatsapp-site-equilibra"),
 ]);
 
 const equilibraPreRegistrationEvents = new Set([
@@ -48,6 +49,10 @@ const equilibraGeneralPreRegistrationEvents = new Set([
   normalizeText("pre-inscricao-equilibra"),
 ]);
 
+const equilibraWhatsappEvents = new Set([
+  normalizeText("whatsapp-site-equilibra"),
+]);
+
 const agendaUnits = new Map<string, string>([
   [normalizeText("agenda-de-cursos-equilibra"), "Equilibra (CWB)"],
   [normalizeText("agenda-de-pos-em-curitiba"), "Curitiba"],
@@ -65,10 +70,13 @@ export function routeForConversion(conversion: ParsedRdConversion): ProductRoute
   const isEquilibraPreRegistration = equilibraPreRegistrationEvents.has(normalizedEvent);
   const isEquilibraMessageForm = equilibraMessageFormEvents.has(normalizedEvent);
   const isEquilibraGeneralPreRegistration = equilibraGeneralPreRegistrationEvents.has(normalizedEvent);
+  const isEquilibraWhatsapp = equilibraWhatsappEvents.has(normalizedEvent);
   if (!agendaUnit && !acceptedEvents.has(normalizedEvent)) return undefined;
 
   const unit = agendaUnit
-    || (isEquilibraPreRegistration || isEquilibraMessageForm ? "Equilibra (Curitiba)" : undefined)
+    || (isEquilibraPreRegistration || isEquilibraMessageForm || isEquilibraWhatsapp
+      ? "Equilibra (Curitiba)"
+      : undefined)
     || (isWhatsappSite
       ? customValue(conversion.customFields, "Unidade da sua escolha", "Unidade")
       : customValue(conversion.customFields, "Unidade"));
@@ -78,6 +86,8 @@ export function routeForConversion(conversion: ParsedRdConversion): ProductRoute
       ? customValue(conversion.customFields, "Curso de Interesse", "Título da página")
       : isEquilibraMessageForm
         ? undefined
+        : isEquilibraWhatsapp
+          ? customValue(conversion.customFields, "Qual curso você está buscando?", "Curso de interesse", "Curso")
         : isWhatsappSite
           ? customValue(conversion.customFields, "Qual curso você está buscando?", "Curso de interesse", "Curso")
           : customValue(conversion.customFields, "Curso", "Qual curso você está buscando?", "Curso de interesse");
@@ -94,6 +104,8 @@ export function routeForConversion(conversion: ParsedRdConversion): ProductRoute
       ? "Pré-inscrição Equilibra"
       : isEquilibraMessageForm
         ? "Contato Equilibra"
+      : isEquilibraWhatsapp
+        ? "WhatsApp Equilibra"
       : isWhatsappSite
         ? "WhatsApp Site"
         : "Pré-matrícula",
@@ -107,13 +119,15 @@ export function routeForConversion(conversion: ParsedRdConversion): ProductRoute
         ? ["RD", "Site", "Pré-inscrição", "Equilibra"]
       : isEquilibraMessageForm
         ? ["RD", "Site", "Contato", "Equilibra"]
+      : isEquilibraWhatsapp
+        ? ["RD", "Site", "WhatsApp", "Equilibra"]
       : isWhatsappSite
         ? ["RD", "Site", "WhatsApp"]
         : ["RD", "Site", "Pré-matrícula"],
-    derivedCustomFields: agendaUnit || isWhatsappSite || isEquilibraPreRegistration || isEquilibraMessageForm
+    derivedCustomFields: agendaUnit || isWhatsappSite || isEquilibraPreRegistration || isEquilibraMessageForm || isEquilibraWhatsapp
       ? { Curso: course, Unidade: unit }
       : undefined,
-    clearCustomFields: agendaUnit || isWhatsappSite || isEquilibraPreRegistration || isEquilibraMessageForm
+    clearCustomFields: agendaUnit || isWhatsappSite || isEquilibraPreRegistration || isEquilibraMessageForm || isEquilibraWhatsapp
       ? ["Data do Curso"]
       : undefined,
     customFieldNames: agendaUnit
@@ -122,6 +136,8 @@ export function routeForConversion(conversion: ParsedRdConversion): ProductRoute
         ? ["Curso de Interesse"]
         : isEquilibraMessageForm
           ? ["Mensagem"]
+        : isEquilibraWhatsapp
+          ? ["Qual curso você está buscando?"]
         : isWhatsappSite
           ? ["Qual curso você está buscando?", "Unidade da sua escolha"]
           : ["Curso", "Unidade", "Data do Curso", "Formação"],
@@ -159,6 +175,15 @@ function destinationForUnit(unit: string): { pipelineName: string; stageName: st
 
 export function isAgendaEvent(eventIdentifier: string): boolean {
   return Boolean(agendaUnitFromEvent(eventIdentifier));
+}
+
+export function isEquilibraEvent(eventIdentifier: string): boolean {
+  const normalizedEvent = normalizeText(eventIdentifier);
+  const agendaUnit = agendaUnitFromEvent(eventIdentifier);
+  return agendaUnit?.startsWith("Equilibra") === true
+    || equilibraPreRegistrationEvents.has(normalizedEvent)
+    || equilibraMessageFormEvents.has(normalizedEvent)
+    || equilibraWhatsappEvents.has(normalizedEvent);
 }
 
 function agendaUnitFromEvent(eventIdentifier: string): string | undefined {

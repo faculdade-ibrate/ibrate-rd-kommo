@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { agendaIdentifierFromContact, conversionIdentifierFromContact, parseRdWebhook, sanitizedReceipt, unwrapRdAutomationPayload } from "@/lib/rd";
 import { syncConversion } from "@/lib/sync";
 import { KommoError, safeKommoErrorDetail } from "@/lib/kommo";
-import { isAgendaEvent } from "@/config/products";
+import { isAgendaEvent, isEquilibraEvent } from "@/config/products";
 
 export const runtime = "nodejs";
 export const maxDuration = 30;
@@ -51,18 +51,29 @@ export async function handleRdWebhook(
         return NextResponse.json({ ok: true, status: "ignored", reason: "Conversão não pertence às agendas" });
       }
     }
+    if (isStandardWebhook && automationRoute === "equilibra") {
+      const eventIdentifier = String(record.event_identifier ?? "");
+      if (!isEquilibraEvent(eventIdentifier)) {
+        return NextResponse.json({ ok: true, status: "ignored", reason: "Conversão não pertence à Equilibra" });
+      }
+    }
 
     if (!isStandardWebhook && automationRoute) {
       const contact = unwrapRdAutomationPayload(record);
       const detectedIdentifier = automationRoute === "agendas"
         ? agendaIdentifierFromContact(contact) || conversionIdentifierFromContact(contact)
-        : undefined;
+        : automationRoute === "equilibra"
+          ? conversionIdentifierFromContact(contact)
+          : undefined;
+      if (automationRoute === "equilibra" && (!detectedIdentifier || !isEquilibraEvent(detectedIdentifier))) {
+        return NextResponse.json({ ok: true, status: "ignored", reason: "Conversão não pertence à Equilibra" });
+      }
       body = {
         event_type: "RD_AUTOMATION",
         entity_type: "CONTACT",
-        event_identifier: detectedIdentifier && isAgendaEvent(detectedIdentifier)
-          ? detectedIdentifier
-          : automationRoute,
+        event_identifier: detectedIdentifier && (
+          isAgendaEvent(detectedIdentifier) || isEquilibraEvent(detectedIdentifier)
+        ) ? detectedIdentifier : automationRoute,
         event_timestamp: new Date().toISOString(),
         contact,
       };

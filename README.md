@@ -8,6 +8,7 @@ Aplicação independente que recebe conversões do **Formulário de Pré-matríc
 - Evento RD do WhatsApp: `whatsapp-site`.
 - Evento RD da Equilibra: `Pré inscrição cursos` (rota `pre-inscricao-cursos`).
 - Formulários gerais da Equilibra: `Pré inscrição Equilibra` e `Contato Equiliba`/`Contato Equilibra`.
+- WhatsApp da Equilibra: `whatsapp-site-equilibra`.
 - Rota de automação: `pre-matricula`.
 - Canal automático das agendas: identificadores iniciados por `agenda-de-cursos-`.
 - A cidade é extraída de formatos como `agenda-de-cursos-em-cascavel`, `agenda-de-cursos-curitiba` e `agenda-de-pos-em-curitiba`.
@@ -23,6 +24,7 @@ Aplicação independente que recebe conversões do **Formulário de Pré-matríc
 - No evento `whatsapp-site`, `Qual curso você está buscando?` e `Unidade da sua escolha` têm prioridade sobre dados históricos da RD; `Data do Curso` é limpa por não existir nesse formulário.
 - Na `Pré inscrição cursos`, `Curso de Interesse` é gravado como `Curso`, a unidade é fixada como `Equilibra (Curitiba)` e `Mensagem` é ignorada.
 - Em `Pré inscrição Equilibra` e `Contato Equilibra`, somente `Mensagem` é gravada como campo personalizado; a unidade é fixada como `Equilibra (Curitiba)` e dados históricos de curso, formação e data são ignorados.
+- No `whatsapp-site-equilibra`, `Qual curso você está buscando?` é gravado como `Curso`; a unidade é fixada como `Equilibra (Curitiba)` e dados históricos são ignorados.
 - Tags: `RD`, `Site` e `Pré-matrícula`.
 - Nas agendas, as únicas tags enviadas são `Pré-matrícula` e `Agenda de Cursos`.
 - No `whatsapp-site`, as tags enviadas são `RD`, `Site` e `WhatsApp`.
@@ -60,18 +62,13 @@ Para uma automação que reúne várias LPs de agenda, use na ação **Enviar Le
 https://SEU-PROJETO.vercel.app/api/webhooks/rd/agendas/SEU_SEGREDO
 ```
 
-Para a automação separada da Equilibra, com entrada no formulário **Pré inscrição cursos**, use:
+Para reunir todas as entradas da Equilibra em uma única automação — **Pré inscrição cursos**, **Pré inscrição Equilibra**, **Contato Equilibra**, **whatsapp-site-equilibra** e a agenda da Equilibra — use:
 
 ```text
-https://SEU-PROJETO.vercel.app/api/webhooks/rd/pre-inscricao-cursos/SEU_SEGREDO
+https://SEU-PROJETO.vercel.app/api/webhooks/rd/equilibra/SEU_SEGREDO
 ```
 
-Para os dois formulários gerais da Equilibra, use automações separadas:
-
-```text
-https://SEU-PROJETO.vercel.app/api/webhooks/rd/pre-inscricao-equilibra/SEU_SEGREDO
-https://SEU-PROJETO.vercel.app/api/webhooks/rd/contato-equilibra/SEU_SEGREDO
-```
+O canal identifica a última conversão no contato, aplica o mapeamento específico do formulário e ignora eventos que não pertençam à Equilibra. Os endpoints separados anteriores continuam compatíveis.
 
 Nesse formato, a aplicação lê o identificador da última conversão dentro do payload da automação e extrai a cidade. Ao incluir uma nova LP como entrada dessa automação, ela será reconhecida automaticamente se o identificador seguir os padrões `agenda-de-cursos-[cidade]`, `agenda-de-cursos-em-[cidade]` ou `agenda-de-pos-em-[cidade]`.
 
