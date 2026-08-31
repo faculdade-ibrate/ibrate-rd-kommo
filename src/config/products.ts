@@ -146,7 +146,7 @@ export function routeForConversion(conversion: ParsedRdConversion): ProductRoute
 
 function destinationForUnit(unit: string): { pipelineName: string; stageName: string } | undefined {
   const normalizedUnit = normalizeText(unit);
-  if (normalizedUnit === "curitiba") {
+  if (["curitiba", "ibrate curitiba"].includes(normalizedUnit)) {
     return {
       pipelineName: process.env.KOMMO_CURITIBA_PIPELINE_NAME || "Funil Curitiba",
       stageName: process.env.KOMMO_CURITIBA_ENTRY_STAGE_NAME || "NOVOS LEADS RD",
@@ -179,10 +179,7 @@ export function isAgendaEvent(eventIdentifier: string): boolean {
 
 export function isEquilibraEvent(eventIdentifier: string): boolean {
   const normalizedEvent = normalizeText(eventIdentifier);
-  const agendaUnit = agendaUnitFromEvent(eventIdentifier);
-  return agendaUnit?.startsWith("Equilibra") === true
-    || equilibraPreRegistrationEvents.has(normalizedEvent)
-    || equilibraMessageFormEvents.has(normalizedEvent)
+  return equilibraMessageFormEvents.has(normalizedEvent)
     || equilibraWhatsappEvents.has(normalizedEvent);
 }
 

@@ -62,13 +62,13 @@ Para uma automação que reúne várias LPs de agenda, use na ação **Enviar Le
 https://SEU-PROJETO.vercel.app/api/webhooks/rd/agendas/SEU_SEGREDO
 ```
 
-Para reunir todas as entradas da Equilibra em uma única automação — **Pré inscrição cursos**, **Pré inscrição Equilibra**, **Contato Equilibra**, **whatsapp-site-equilibra** e a agenda da Equilibra — use:
+Para reunir as entradas gerais da Equilibra em uma única automação — **Pré inscrição Equilibra**, **Contato Equilibra** e **whatsapp-site-equilibra** — use:
 
 ```text
 https://SEU-PROJETO.vercel.app/api/webhooks/rd/equilibra/SEU_SEGREDO
 ```
 
-O canal identifica a última conversão no contato, aplica o mapeamento específico do formulário e ignora eventos que não pertençam à Equilibra. Os endpoints separados anteriores continuam compatíveis.
+O canal identifica a última conversão no contato, aplica o mapeamento específico do formulário e ignora eventos que não pertençam a esse grupo. O `whatsapp-site` da Ibrate permanece em sua própria automação e `Ibrate (Curitiba)` é tratado como Curitiba; a agenda da Equilibra permanece no canal de agendas. Os endpoints separados anteriores continuam compatíveis.
 
 Nesse formato, a aplicação lê o identificador da última conversão dentro do payload da automação e extrai a cidade. Ao incluir uma nova LP como entrada dessa automação, ela será reconhecida automaticamente se o identificador seguir os padrões `agenda-de-cursos-[cidade]`, `agenda-de-cursos-em-[cidade]` ou `agenda-de-pos-em-[cidade]`.
 

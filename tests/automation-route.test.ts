@@ -111,6 +111,19 @@ describe("roteamento da pré-matrícula Ibrate", () => {
     });
   });
 
+  it("trata Ibrate (Curitiba) como Curitiba no whatsapp-site", () => {
+    const whatsapp = conversion("", "whatsapp-site");
+    whatsapp.customFields = {
+      "Qual curso você está buscando?": "Acupuntura",
+      "Unidade da sua escolha": "Ibrate (Curitiba)",
+    };
+
+    expect(routeForConversion(whatsapp)).toMatchObject({
+      pipelineName: "Funil Curitiba",
+      leadName: "Acupuntura | Ibrate (Curitiba)",
+    });
+  });
+
   it("envia Pré inscrição cursos para a Equilibra e ignora Mensagem", () => {
     const preRegistration = conversion("Unidade antiga", "pre-inscricao-cursos");
     preRegistration.customFields = {
@@ -252,11 +265,9 @@ describe("roteamento da pré-matrícula Ibrate", () => {
   });
 
   it.each([
-    "Pré inscrição cursos",
     "Pré inscrição Equilibra",
     "Contato Equiliba",
     "whatsapp-site-equilibra",
-    "agenda-de-cursos-equilibra",
   ])("reconhece %s no canal agrupado da Equilibra", (eventIdentifier) => {
     expect(isEquilibraEvent(eventIdentifier)).toBe(true);
   });
@@ -264,5 +275,7 @@ describe("roteamento da pré-matrícula Ibrate", () => {
   it("rejeita eventos da Ibrate no canal agrupado da Equilibra", () => {
     expect(isEquilibraEvent("whatsapp-site")).toBe(false);
     expect(isEquilibraEvent("agenda-de-cursos-em-cascavel")).toBe(false);
+    expect(isEquilibraEvent("agenda-de-cursos-equilibra")).toBe(false);
+    expect(isEquilibraEvent("Pré inscrição cursos")).toBe(false);
   });
 });
