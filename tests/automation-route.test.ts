@@ -111,6 +111,32 @@ describe("roteamento da pré-matrícula Ibrate", () => {
     });
   });
 
+  it("envia Pré inscrição cursos para a Equilibra e ignora Mensagem", () => {
+    const preRegistration = conversion("Unidade antiga", "pre-inscricao-cursos");
+    preRegistration.customFields = {
+      Mensagem: "Boa tarde. Gostaria de mais informações sobre o curso.",
+      "Título da página": "Pós-Graduação e MBA em Cosmetologia e Inovação de Cosméticos",
+      "Curso de Interesse": "Pós-Graduação e MBA em Cosmetologia e Inovação de Cosméticos",
+      "Data do Curso": "12/09/2026",
+      Formação: "Formação antiga",
+    };
+
+    expect(routeForConversion(preRegistration)).toMatchObject({
+      product: "Pré-inscrição Equilibra",
+      source: "Site",
+      pipelineName: "Funil Equilibra",
+      stageName: "NOVOS LEADS RD",
+      leadName: "Pós-Graduação e MBA em Cosmetologia e Inovação de Cosméticos | Equilibra (Curitiba)",
+      tags: ["RD", "Site", "Pré-inscrição", "Equilibra"],
+      derivedCustomFields: {
+        Curso: "Pós-Graduação e MBA em Cosmetologia e Inovação de Cosméticos",
+        Unidade: "Equilibra (Curitiba)",
+      },
+      clearCustomFields: ["Data do Curso"],
+      customFieldNames: ["Curso de Interesse"],
+    });
+  });
+
   it("ignora outros formulários", () => {
     expect(routeForConversion(conversion("Curitiba", "Outro formulário"))).toBeUndefined();
   });

@@ -1,11 +1,12 @@
 # Faculdade Ibrate · RD Station → Kommo
 
-Aplicação independente que recebe conversões do **Formulário de Pré-matrícula**, do **WhatsApp do site** e das **Agendas de Cursos** do RD Station e cria ou atualiza o contato e a oportunidade na conta `ibrate.kommo.com`.
+Aplicação independente que recebe conversões do **Formulário de Pré-matrícula**, do **WhatsApp do site**, da **Pré inscrição cursos** da Equilibra e das **Agendas de Cursos** do RD Station e cria ou atualiza o contato e a oportunidade na conta `ibrate.kommo.com`.
 
 ## Regras atuais
 
 - Evento RD: `Formulário de Pré-matrícula`.
 - Evento RD do WhatsApp: `whatsapp-site`.
+- Evento RD da Equilibra: `Pré inscrição cursos` (rota `pre-inscricao-cursos`).
 - Rota de automação: `pre-matricula`.
 - Canal automático das agendas: identificadores iniciados por `agenda-de-cursos-`.
 - A cidade é extraída de formatos como `agenda-de-cursos-em-cascavel`, `agenda-de-cursos-curitiba` e `agenda-de-pos-em-curitiba`.
@@ -19,9 +20,11 @@ Aplicação independente que recebe conversões do **Formulário de Pré-matríc
 - Campos personalizados da oportunidade: `Curso`, `Unidade`, `Data do Curso` e `Formação`.
 - Nas LPs de agenda, `curso_de_interesse` é gravado como `Curso`; `Unidade` é derivada do identificador e `Data do Curso` fica vazia quando não existir no formulário.
 - No evento `whatsapp-site`, `Qual curso você está buscando?` e `Unidade da sua escolha` têm prioridade sobre dados históricos da RD; `Data do Curso` é limpa por não existir nesse formulário.
+- Na `Pré inscrição cursos`, `Curso de Interesse` é gravado como `Curso`, a unidade é fixada como `Equilibra (Curitiba)` e `Mensagem` é ignorada.
 - Tags: `RD`, `Site` e `Pré-matrícula`.
 - Nas agendas, as únicas tags enviadas são `Pré-matrícula` e `Agenda de Cursos`.
 - No `whatsapp-site`, as tags enviadas são `RD`, `Site` e `WhatsApp`.
+- Na `Pré inscrição cursos`, as tags enviadas são `RD`, `Site`, `Pré-inscrição` e `Equilibra`.
 
 ## Variáveis da Vercel
 
@@ -53,6 +56,12 @@ Para uma automação que reúne várias LPs de agenda, use na ação **Enviar Le
 
 ```text
 https://SEU-PROJETO.vercel.app/api/webhooks/rd/agendas/SEU_SEGREDO
+```
+
+Para a automação separada da Equilibra, com entrada no formulário **Pré inscrição cursos**, use:
+
+```text
+https://SEU-PROJETO.vercel.app/api/webhooks/rd/pre-inscricao-cursos/SEU_SEGREDO
 ```
 
 Nesse formato, a aplicação lê o identificador da última conversão dentro do payload da automação e extrai a cidade. Ao incluir uma nova LP como entrada dessa automação, ela será reconhecida automaticamente se o identificador seguir os padrões `agenda-de-cursos-[cidade]`, `agenda-de-cursos-em-[cidade]` ou `agenda-de-pos-em-[cidade]`.

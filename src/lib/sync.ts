@@ -25,6 +25,7 @@ export async function syncConversion(conversion: ParsedRdConversion) {
   const origin = readableOrigin(conversion.origin);
   const utms = originFields(conversion.origin);
   const idFromCustomFields = findCustomValue(conversion.customFields, ["id da conversao", "conversion id", "id conversao"]);
+  const selectedCustomFields = selectCustomFields(conversion.customFields, route.customFieldNames);
   const mapped = buildLeadCustomFields(leadFields, {
     product: route.product,
     source: route.source,
@@ -34,7 +35,7 @@ export async function syncConversion(conversion: ParsedRdConversion) {
     eventDate: conversion.eventTimestamp,
     rdUuid: conversion.rdContactUuid,
     ...utms,
-    custom: { ...conversion.customFields, ...route.derivedCustomFields },
+    custom: { ...route.derivedCustomFields, ...selectedCustomFields },
     clearCustomFields: route.clearCustomFields,
   });
 
@@ -84,6 +85,25 @@ export async function syncConversion(conversion: ParsedRdConversion) {
     mappedFields: mapped.mappedFields,
     warnings: mapped.warnings,
   };
+}
+
+function selectCustomFields(fields: Record<string, unknown>, names?: string[]): Record<string, unknown> {
+  if (!names) return fields;
+  const allowed = new Set(names.map(normalizeCustomFieldName));
+  return Object.fromEntries(
+    Object.entries(fields).filter(([key]) => allowed.has(normalizeCustomFieldName(key))),
+  );
+}
+
+function normalizeCustomFieldName(value: string): string {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/^cf_/, "")
+    .replace(/_/g, " ")
+    .replace(/[^a-zA-Z0-9]+/g, " ")
+    .trim()
+    .toLowerCase();
 }
 
 function readableOrigin(origin: unknown): string | undefined {
