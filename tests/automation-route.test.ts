@@ -59,9 +59,10 @@ describe("roteamento da pré-matrícula Ibrate", () => {
     });
   });
 
-  it("ignora Equilibra e unidades ainda não configuradas", () => {
-    expect(routeForConversion(conversion("Equilibra (CWB)"))).toEqual({
-      ignoredReason: "Unidade sem funil configurado: Equilibra (CWB)",
+  it("envia Equilibra para seu próprio funil e ignora unidades ainda não configuradas", () => {
+    expect(routeForConversion(conversion("Equilibra (CWB)"))).toMatchObject({
+      pipelineName: "Funil Equilibra",
+      stageName: "NOVOS LEADS RD",
     });
     expect(routeForConversion(conversion("Nova unidade"))).toEqual({
       ignoredReason: "Unidade sem funil configurado: Nova unidade",
@@ -70,6 +71,44 @@ describe("roteamento da pré-matrícula Ibrate", () => {
 
   it("aceita a rota curta usada pelo fluxo de automação do RD", () => {
     expect(routeForConversion(conversion("Londrina", "pre-matricula"))).toBeDefined();
+  });
+
+  it("roteia whatsapp-site pela unidade atual e ignora os dados históricos da RD", () => {
+    const whatsapp = conversion("Unidade antiga", "whatsapp-site");
+    whatsapp.customFields = {
+      Curso: "Curso antigo",
+      Unidade: "Unidade antiga",
+      "Data do Curso": "12/09/2026",
+      "Qual curso você está buscando?": "Acupuntura",
+      "Unidade da sua escolha": "Equilibra (Curitiba)",
+    };
+
+    expect(routeForConversion(whatsapp)).toMatchObject({
+      product: "WhatsApp Site",
+      source: "Site",
+      pipelineName: "Funil Equilibra",
+      stageName: "NOVOS LEADS RD",
+      leadName: "Acupuntura | Equilibra (Curitiba)",
+      tags: ["RD", "Site", "WhatsApp"],
+      derivedCustomFields: {
+        Curso: "Acupuntura",
+        Unidade: "Equilibra (Curitiba)",
+      },
+      clearCustomFields: ["Data do Curso"],
+    });
+  });
+
+  it("mantém as cidades do whatsapp-site nos funis regionais", () => {
+    const whatsapp = conversion("", "whatsapp-site");
+    whatsapp.customFields = {
+      "Qual curso você está buscando?": "Acupuntura",
+      "Unidade da sua escolha": "Curitiba",
+    };
+
+    expect(routeForConversion(whatsapp)).toMatchObject({
+      pipelineName: "Funil Curitiba",
+      leadName: "Acupuntura | Curitiba",
+    });
   });
 
   it("ignora outros formulários", () => {
@@ -118,9 +157,11 @@ describe("roteamento da pré-matrícula Ibrate", () => {
     });
   });
 
-  it("reconhece Equilibra, mas mantém sem funil por enquanto", () => {
-    expect(routeForConversion(conversion("", "agenda-de-cursos-equilibra"))).toEqual({
-      ignoredReason: "Unidade sem funil configurado: Equilibra (CWB)",
+  it("envia a agenda da Equilibra para seu funil", () => {
+    expect(routeForConversion(conversion("", "agenda-de-cursos-equilibra"))).toMatchObject({
+      pipelineName: "Funil Equilibra",
+      stageName: "NOVOS LEADS RD",
+      derivedCustomFields: { Unidade: "Equilibra (CWB)" },
     });
   });
 

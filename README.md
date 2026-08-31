@@ -1,23 +1,27 @@
 # Faculdade Ibrate · RD Station → Kommo
 
-Aplicação independente que recebe conversões do **Formulário de Pré-matrícula** e das **Agendas de Cursos** do RD Station e cria ou atualiza o contato e a oportunidade na conta `ibrate.kommo.com`.
+Aplicação independente que recebe conversões do **Formulário de Pré-matrícula**, do **WhatsApp do site** e das **Agendas de Cursos** do RD Station e cria ou atualiza o contato e a oportunidade na conta `ibrate.kommo.com`.
 
 ## Regras atuais
 
 - Evento RD: `Formulário de Pré-matrícula`.
+- Evento RD do WhatsApp: `whatsapp-site`.
 - Rota de automação: `pre-matricula`.
 - Canal automático das agendas: identificadores iniciados por `agenda-de-cursos-`.
 - A cidade é extraída de formatos como `agenda-de-cursos-em-cascavel`, `agenda-de-cursos-curitiba` e `agenda-de-pos-em-curitiba`.
 - `Curitiba` → `Funil Curitiba` → `NOVOS LEADS RD`.
 - `Chapecó`, `Balneário Camboriú` e `Joinville` → `Funil Santa Catarina` → `NOVOS LEADS RD`.
 - `Cascavel` e `Londrina` → `Funil Interior do PR` → `NOVOS LEADS RD`.
-- `Equilibra (CWB)` e cidades ainda não configuradas são ignoradas com o motivo registrado no log.
+- `Equilibra (Curitiba)` e `Equilibra (CWB)` → `Funil Equilibra` → `NOVOS LEADS RD`.
+- Cidades ainda não configuradas são ignoradas com o motivo registrado no log.
 - O contato é localizado por telefone ou e-mail. Uma oportunidade aberta é unificada por funil regional: cidades da mesma região atualizam a mesma oportunidade; uma região diferente cria outra.
-- Nome da oportunidade: `Pré-matrícula | Curso | Nome`.
+- Nome da oportunidade: `Curso | Cidade`.
 - Campos personalizados da oportunidade: `Curso`, `Unidade`, `Data do Curso` e `Formação`.
 - Nas LPs de agenda, `curso_de_interesse` é gravado como `Curso`; `Unidade` é derivada do identificador e `Data do Curso` fica vazia quando não existir no formulário.
+- No evento `whatsapp-site`, `Qual curso você está buscando?` e `Unidade da sua escolha` têm prioridade sobre dados históricos da RD; `Data do Curso` é limpa por não existir nesse formulário.
 - Tags: `RD`, `Site` e `Pré-matrícula`.
 - Nas agendas, as únicas tags enviadas são `Pré-matrícula` e `Agenda de Cursos`.
+- No `whatsapp-site`, as tags enviadas são `RD`, `Site` e `WhatsApp`.
 
 ## Variáveis da Vercel
 
@@ -31,9 +35,11 @@ Copie os nomes de `.env.example` para o projeto da Ibrate na Vercel.
 - `KOMMO_SANTA_CATARINA_ENTRY_STAGE_NAME=NOVOS LEADS RD`
 - `KOMMO_INTERIOR_PR_PIPELINE_NAME=Funil Interior do PR`
 - `KOMMO_INTERIOR_PR_ENTRY_STAGE_NAME=NOVOS LEADS RD`
+- `KOMMO_EQUILIBRA_PIPELINE_NAME=Funil Equilibra`
+- `KOMMO_EQUILIBRA_ENTRY_STAGE_NAME=NOVOS LEADS RD`
 - `KOMMO_SYNC_ENABLED=false`: modo seguro para validar o payload sem gravar na Kommo.
 
-Os nomes dos funis já possuem os padrões `Funil Curitiba` e `Funil Filiais`, mas também podem ser alterados pelas variáveis correspondentes.
+Os nomes dos funis possuem padrões no código, mas também podem ser alterados pelas variáveis correspondentes.
 
 ## Webhook
 

@@ -19,6 +19,7 @@ export type IgnoredRoute = { ignoredReason: string };
 const acceptedEvents = new Set([
   normalizeText("Formulário de Pré-matrícula"),
   normalizeText("pre-matricula"),
+  normalizeText("whatsapp-site"),
 ]);
 
 const agendaUnits = new Map<string, string>([
@@ -33,28 +34,35 @@ const agendaUnits = new Map<string, string>([
 
 export function routeForConversion(conversion: ParsedRdConversion): ProductRoute | IgnoredRoute | undefined {
   const agendaUnit = agendaUnitFromEvent(conversion.eventIdentifier);
+  const isWhatsappSite = normalizeText(conversion.eventIdentifier) === normalizeText("whatsapp-site");
   if (!agendaUnit && !acceptedEvents.has(normalizeText(conversion.eventIdentifier))) return undefined;
 
-  const unit = agendaUnit || customValue(conversion.customFields, "Unidade");
+  const unit = agendaUnit || (isWhatsappSite
+    ? customValue(conversion.customFields, "Unidade da sua escolha", "Unidade")
+    : customValue(conversion.customFields, "Unidade"));
   const course = agendaUnit
     ? customValue(conversion.customFields, "Curso de interesse", "Curso", "Qual curso você está buscando?")
-    : customValue(conversion.customFields, "Curso", "Qual curso você está buscando?", "Curso de interesse");
+    : isWhatsappSite
+      ? customValue(conversion.customFields, "Qual curso você está buscando?", "Curso de interesse", "Curso")
+      : customValue(conversion.customFields, "Curso", "Qual curso você está buscando?", "Curso de interesse");
   if (!unit) throw new Error("Pré-matrícula sem Unidade; não é possível escolher o funil.");
   const destination = destinationForUnit(unit);
   if (!destination) return { ignoredReason: `Unidade sem funil configurado: ${unit}` };
   const { pipelineName, stageName } = destination;
 
   return {
-    product: "Pré-matrícula",
+    product: isWhatsappSite ? "WhatsApp Site" : "Pré-matrícula",
     leadName: [course, unit].filter(Boolean).join(" | "),
     source: agendaUnit ? "Landing Page" : "Site",
     pipelineName,
     stageName,
     tags: agendaUnit
       ? ["Pré-matrícula", "Agenda de Cursos"]
-      : ["RD", "Site", "Pré-matrícula"],
-    derivedCustomFields: agendaUnit ? { Curso: course, Unidade: unit } : undefined,
-    clearCustomFields: agendaUnit ? ["Data do Curso"] : undefined,
+      : isWhatsappSite
+        ? ["RD", "Site", "WhatsApp"]
+        : ["RD", "Site", "Pré-matrícula"],
+    derivedCustomFields: agendaUnit || isWhatsappSite ? { Curso: course, Unidade: unit } : undefined,
+    clearCustomFields: agendaUnit || isWhatsappSite ? ["Data do Curso"] : undefined,
   };
 }
 
@@ -76,6 +84,12 @@ function destinationForUnit(unit: string): { pipelineName: string; stageName: st
     return {
       pipelineName: process.env.KOMMO_INTERIOR_PR_PIPELINE_NAME || "Funil Interior do PR",
       stageName: process.env.KOMMO_INTERIOR_PR_ENTRY_STAGE_NAME || "NOVOS LEADS RD",
+    };
+  }
+  if (["equilibra curitiba", "equilibra cwb"].includes(normalizedUnit)) {
+    return {
+      pipelineName: process.env.KOMMO_EQUILIBRA_PIPELINE_NAME || "Funil Equilibra",
+      stageName: process.env.KOMMO_EQUILIBRA_ENTRY_STAGE_NAME || "NOVOS LEADS RD",
     };
   }
   return undefined;
