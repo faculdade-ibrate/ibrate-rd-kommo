@@ -133,13 +133,13 @@ export function routeForConversion(conversion: ParsedRdConversion): ProductRoute
     customFieldNames: agendaUnit
       ? ["Curso de interesse", "Formação"]
       : isEquilibraPreRegistration
-        ? ["Curso de Interesse"]
+        ? ["Curso de Interesse", "Formação"]
         : isEquilibraMessageForm
-          ? ["Mensagem"]
+          ? ["Mensagem", "Formação"]
         : isEquilibraWhatsapp
-          ? ["Qual curso você está buscando?"]
+          ? ["Qual curso você está buscando?", "Formação"]
         : isWhatsappSite
-          ? ["Qual curso você está buscando?", "Unidade da sua escolha"]
+          ? ["Qual curso você está buscando?", "Unidade da sua escolha", "Formação"]
           : ["Curso", "Unidade", "Data do Curso", "Formação"],
   };
 }

@@ -81,6 +81,7 @@ describe("roteamento da pré-matrícula Ibrate", () => {
       "Data do Curso": "12/09/2026",
       "Qual curso você está buscando?": "Acupuntura",
       "Unidade da sua escolha": "Equilibra (Curitiba)",
+      Formação: "Formação superior completa",
     };
 
     expect(routeForConversion(whatsapp)).toMatchObject({
@@ -95,6 +96,7 @@ describe("roteamento da pré-matrícula Ibrate", () => {
         Unidade: "Equilibra (Curitiba)",
       },
       clearCustomFields: ["Data do Curso"],
+      customFieldNames: ["Qual curso você está buscando?", "Unidade da sua escolha", "Formação"],
     });
   });
 
@@ -131,7 +133,7 @@ describe("roteamento da pré-matrícula Ibrate", () => {
       "Título da página": "Pós-Graduação e MBA em Cosmetologia e Inovação de Cosméticos",
       "Curso de Interesse": "Pós-Graduação e MBA em Cosmetologia e Inovação de Cosméticos",
       "Data do Curso": "12/09/2026",
-      Formação: "Formação antiga",
+      Formação: "Formação superior completa",
     };
 
     expect(routeForConversion(preRegistration)).toMatchObject({
@@ -146,7 +148,7 @@ describe("roteamento da pré-matrícula Ibrate", () => {
         Unidade: "Equilibra (Curitiba)",
       },
       clearCustomFields: ["Data do Curso"],
-      customFieldNames: ["Curso de Interesse"],
+      customFieldNames: ["Curso de Interesse", "Formação"],
     });
   });
 
@@ -158,6 +160,7 @@ describe("roteamento da pré-matrícula Ibrate", () => {
     const contact = conversion("Unidade antiga", eventIdentifier);
     contact.customFields = {
       Mensagem: "Olá",
+      Formação: "Formação superior completa",
       Curso: "Curso histórico",
       Unidade: "Unidade histórica",
       "Data do Curso": "12/09/2026",
@@ -174,7 +177,7 @@ describe("roteamento da pré-matrícula Ibrate", () => {
         Unidade: "Equilibra (Curitiba)",
       },
       clearCustomFields: ["Data do Curso"],
-      customFieldNames: ["Mensagem"],
+      customFieldNames: ["Mensagem", "Formação"],
     });
   });
 
@@ -185,6 +188,7 @@ describe("roteamento da pré-matrícula Ibrate", () => {
       Unidade: "Unidade histórica",
       "Data do Curso": "12/09/2026",
       "Qual curso você está buscando?": "Acupuntura",
+      Formação: "Formação superior completa",
     };
 
     expect(routeForConversion(whatsapp)).toMatchObject({
@@ -199,7 +203,7 @@ describe("roteamento da pré-matrícula Ibrate", () => {
         Unidade: "Equilibra (Curitiba)",
       },
       clearCustomFields: ["Data do Curso"],
-      customFieldNames: ["Qual curso você está buscando?"],
+      customFieldNames: ["Qual curso você está buscando?", "Formação"],
     });
   });
 

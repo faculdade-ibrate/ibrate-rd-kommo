@@ -22,6 +22,7 @@ Aplicação independente que recebe conversões do **Formulário de Pré-matríc
 - Campos personalizados da oportunidade: `Curso`, `Unidade`, `Data do Curso` e `Formação`.
 - Nas LPs de agenda, `curso_de_interesse` é gravado como `Curso`; `Unidade` é derivada do identificador e `Data do Curso` fica vazia quando não existir no formulário.
 - No evento `whatsapp-site`, `Qual curso você está buscando?` e `Unidade da sua escolha` têm prioridade sobre dados históricos da RD; `Data do Curso` é limpa por não existir nesse formulário.
+- O campo `Formação` é aceito na pré-matrícula, agendas, WhatsApp da Ibrate e em todas as entradas da Equilibra.
 - Na `Pré inscrição cursos`, `Curso de Interesse` é gravado como `Curso`, a unidade é fixada como `Equilibra (Curitiba)` e `Mensagem` é ignorada.
 - Em `Pré inscrição Equilibra` e `Contato Equilibra`, somente `Mensagem` é gravada como campo personalizado; a unidade é fixada como `Equilibra (Curitiba)` e dados históricos de curso, formação e data são ignorados.
 - No `whatsapp-site-equilibra`, `Qual curso você está buscando?` é gravado como `Curso`; a unidade é fixada como `Equilibra (Curitiba)` e dados históricos são ignorados.
