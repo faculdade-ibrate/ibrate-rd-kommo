@@ -83,6 +83,7 @@ https://SEU-PROJETO.vercel.app/api/webhooks/rd/cursos/SEU_SEGREDO
 ```
 
 O canal identifica o slug da última conversão, define o curso cadastrado para a LP e usa `Unidade da sua escolha` para selecionar o funil regional. Estão cadastradas as LPs `pos-fisioterapia-dermatofuncional` e `pos-reabilitacao-neurofuncional-pediatrica`.
+As oportunidades desse canal recebem as tags `Site`, `Pré-inscrição` e `LP`.
 
 Nesse formato, a aplicação lê o identificador da última conversão dentro do payload da automação e extrai a cidade. Ao incluir uma nova LP como entrada dessa automação, ela será reconhecida automaticamente se o identificador seguir os padrões `agenda-de-cursos-[cidade]`, `agenda-de-cursos-em-[cidade]` ou `agenda-de-pos-em-[cidade]`.
 

@@ -130,7 +130,7 @@ export function routeForConversion(conversion: ParsedRdConversion): ProductRoute
     tags: agendaUnit
       ? ["Pré-matrícula", "Agenda de Cursos"]
       : landingPageCourse
-        ? ["Site", "Pré-inscrição"]
+        ? ["Site", "Pré-inscrição", "LP"]
       : isEquilibraPreRegistration || isEquilibraGeneralPreRegistration
         ? ["Site", "Pré-inscrição", "Equilibra"]
       : isEquilibraMessageForm

@@ -304,7 +304,7 @@ describe("roteamento da pré-matrícula Ibrate", () => {
       pipelineName,
       stageName: "NOVOS LEADS RD",
       leadName: `Pós-Graduação em Fisioterapia Dermatofuncional | ${unit}`,
-      tags: ["Site", "Pré-inscrição"],
+      tags: ["Site", "Pré-inscrição", "LP"],
       derivedCustomFields: {
         Curso: "Pós-Graduação em Fisioterapia Dermatofuncional",
         Unidade: unit,
