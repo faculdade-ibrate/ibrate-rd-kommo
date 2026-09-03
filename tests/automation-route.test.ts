@@ -316,6 +316,24 @@ describe("roteamento da pré-matrícula Ibrate", () => {
 
   it("reconhece somente LPs de cursos cadastradas", () => {
     expect(isCourseLandingPageEvent("pos-fisioterapia-dermatofuncional")).toBe(true);
+    expect(isCourseLandingPageEvent("pos-reabilitacao-neurofuncional-pediatrica")).toBe(true);
     expect(isCourseLandingPageEvent("pos-curso-ainda-nao-cadastrado")).toBe(false);
+  });
+
+  it("mapeia o nome oficial da LP de Reabilitação Neurofuncional Pediátrica", () => {
+    const landingPage = conversion("", "pos-reabilitacao-neurofuncional-pediatrica");
+    landingPage.customFields = {
+      "Unidade da sua escolha": "Londrina",
+      Formação: "Formação superior completa",
+    };
+
+    expect(routeForConversion(landingPage)).toMatchObject({
+      pipelineName: "Funil Interior do PR",
+      leadName: "Pós-Graduação em Reabilitação Neurofuncional Pediátrica | Londrina",
+      derivedCustomFields: {
+        Curso: "Pós-Graduação em Reabilitação Neurofuncional Pediátrica",
+        Unidade: "Londrina",
+      },
+    });
   });
 });

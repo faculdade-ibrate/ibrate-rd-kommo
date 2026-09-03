@@ -68,6 +68,10 @@ const courseLandingPages = new Map<string, string>([
     normalizeText("pos-fisioterapia-dermatofuncional"),
     "Pós-Graduação em Fisioterapia Dermatofuncional",
   ],
+  [
+    normalizeText("pos-reabilitacao-neurofuncional-pediatrica"),
+    "Pós-Graduação em Reabilitação Neurofuncional Pediátrica",
+  ],
 ]);
 
 export function routeForConversion(conversion: ParsedRdConversion): ProductRoute | IgnoredRoute | undefined {

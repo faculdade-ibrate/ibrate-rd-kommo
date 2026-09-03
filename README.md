@@ -10,6 +10,7 @@ Aplicação independente que recebe conversões do **Formulário de Pré-matríc
 - Formulários gerais da Equilibra: `Pré inscrição Equilibra` e `Contato Equiliba`/`Contato Equilibra`.
 - WhatsApp da Equilibra: `whatsapp-site-equilibra`.
 - LP de curso: `pos-fisioterapia-dermatofuncional`.
+- LP de curso: `pos-reabilitacao-neurofuncional-pediatrica`.
 - Rota de automação: `pre-matricula`.
 - Canal automático das agendas: identificadores iniciados por `agenda-de-cursos-`.
 - A cidade é extraída de formatos como `agenda-de-cursos-em-cascavel`, `agenda-de-cursos-curitiba` e `agenda-de-pos-em-curitiba`.
@@ -81,7 +82,7 @@ Para reunir LPs específicas de cursos em uma automação própria, use:
 https://SEU-PROJETO.vercel.app/api/webhooks/rd/cursos/SEU_SEGREDO
 ```
 
-O canal identifica o slug da última conversão, define o curso cadastrado para a LP e usa `Unidade da sua escolha` para selecionar o funil regional. Inicialmente, está cadastrada a LP `pos-fisioterapia-dermatofuncional`.
+O canal identifica o slug da última conversão, define o curso cadastrado para a LP e usa `Unidade da sua escolha` para selecionar o funil regional. Estão cadastradas as LPs `pos-fisioterapia-dermatofuncional` e `pos-reabilitacao-neurofuncional-pediatrica`.
 
 Nesse formato, a aplicação lê o identificador da última conversão dentro do payload da automação e extrai a cidade. Ao incluir uma nova LP como entrada dessa automação, ela será reconhecida automaticamente se o identificador seguir os padrões `agenda-de-cursos-[cidade]`, `agenda-de-cursos-em-[cidade]` ou `agenda-de-pos-em-[cidade]`.
 
