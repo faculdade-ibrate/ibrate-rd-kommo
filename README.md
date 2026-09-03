@@ -9,6 +9,7 @@ Aplicação independente que recebe conversões do **Formulário de Pré-matríc
 - Evento RD da Equilibra: `Pré inscrição cursos` (rota `pre-inscricao-cursos`).
 - Formulários gerais da Equilibra: `Pré inscrição Equilibra` e `Contato Equiliba`/`Contato Equilibra`.
 - WhatsApp da Equilibra: `whatsapp-site-equilibra`.
+- LP de curso: `pos-fisioterapia-dermatofuncional`.
 - Rota de automação: `pre-matricula`.
 - Canal automático das agendas: identificadores iniciados por `agenda-de-cursos-`.
 - A cidade é extraída de formatos como `agenda-de-cursos-em-cascavel`, `agenda-de-cursos-curitiba` e `agenda-de-pos-em-curitiba`.
@@ -26,6 +27,7 @@ Aplicação independente que recebe conversões do **Formulário de Pré-matríc
 - Na `Pré inscrição cursos`, `Curso de Interesse` é gravado como `Curso`, a unidade é fixada como `Equilibra (Curitiba)` e `Mensagem` é ignorada.
 - Em `Pré inscrição Equilibra` e `Contato Equilibra`, somente `Mensagem` é gravada como campo personalizado; a unidade é fixada como `Equilibra (Curitiba)` e dados históricos de curso, formação e data são ignorados.
 - No `whatsapp-site-equilibra`, `Qual curso você está buscando?` é gravado como `Curso`; a unidade é fixada como `Equilibra (Curitiba)` e dados históricos são ignorados.
+- Na LP `pos-fisioterapia-dermatofuncional`, o curso é fixado como `Pós-Graduação em Fisioterapia Dermatofuncional`; `Formação` e `Unidade da sua escolha` vêm do formulário e definem os campos e o funil regional.
 - Tags da pré-matrícula: `Site` e `Pré-matrícula`.
 - Nas agendas, as únicas tags enviadas são `Pré-matrícula` e `Agenda de Cursos`.
 - No `whatsapp-site`, as tags enviadas são `Site` e `WhatsApp`.
@@ -72,6 +74,14 @@ https://SEU-PROJETO.vercel.app/api/webhooks/rd/equilibra/SEU_SEGREDO
 ```
 
 O canal identifica a última conversão no contato, aplica o mapeamento específico do formulário e ignora eventos que não pertençam a esse grupo. O `whatsapp-site` da Ibrate permanece em sua própria automação e `Ibrate (Curitiba)` é tratado como Curitiba; a agenda da Equilibra permanece no canal de agendas. Os endpoints separados anteriores continuam compatíveis.
+
+Para reunir LPs específicas de cursos em uma automação própria, use:
+
+```text
+https://SEU-PROJETO.vercel.app/api/webhooks/rd/cursos/SEU_SEGREDO
+```
+
+O canal identifica o slug da última conversão, define o curso cadastrado para a LP e usa `Unidade da sua escolha` para selecionar o funil regional. Inicialmente, está cadastrada a LP `pos-fisioterapia-dermatofuncional`.
 
 Nesse formato, a aplicação lê o identificador da última conversão dentro do payload da automação e extrai a cidade. Ao incluir uma nova LP como entrada dessa automação, ela será reconhecida automaticamente se o identificador seguir os padrões `agenda-de-cursos-[cidade]`, `agenda-de-cursos-em-[cidade]` ou `agenda-de-pos-em-[cidade]`.
 

@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from "vitest";
-import { isAgendaEvent, isEquilibraEvent, routeForConversion } from "../src/config/products";
+import { isAgendaEvent, isCourseLandingPageEvent, isEquilibraEvent, routeForConversion } from "../src/config/products";
 import type { ParsedRdConversion } from "../src/lib/rd";
 
 const originalEnv = { ...process.env };
@@ -281,5 +281,41 @@ describe("roteamento da pré-matrícula Ibrate", () => {
     expect(isEquilibraEvent("agenda-de-cursos-em-cascavel")).toBe(false);
     expect(isEquilibraEvent("agenda-de-cursos-equilibra")).toBe(false);
     expect(isEquilibraEvent("Pré inscrição cursos")).toBe(false);
+  });
+
+  it.each([
+    ["Cascavel", "Funil Interior do PR"],
+    ["Curitiba", "Funil Curitiba"],
+    ["Chapecó", "Funil Santa Catarina"],
+    ["Equilibra (Curitiba)", "Funil Equilibra"],
+  ])("roteia a LP de Dermatofuncional em %s para %s", (unit, pipelineName) => {
+    const landingPage = conversion("Unidade histórica", "pos-fisioterapia-dermatofuncional");
+    landingPage.customFields = {
+      Curso: "Curso histórico",
+      Unidade: "Unidade histórica",
+      "Data do Curso": "12/09/2026",
+      "Unidade da sua escolha": unit,
+      Formação: "Formação superior completa",
+    };
+
+    expect(routeForConversion(landingPage)).toMatchObject({
+      product: "Pré-inscrição",
+      source: "Landing Page",
+      pipelineName,
+      stageName: "NOVOS LEADS RD",
+      leadName: `Pós-Graduação em Fisioterapia Dermatofuncional | ${unit}`,
+      tags: ["Site", "Pré-inscrição"],
+      derivedCustomFields: {
+        Curso: "Pós-Graduação em Fisioterapia Dermatofuncional",
+        Unidade: unit,
+      },
+      clearCustomFields: ["Data do Curso"],
+      customFieldNames: ["Unidade da sua escolha", "Formação"],
+    });
+  });
+
+  it("reconhece somente LPs de cursos cadastradas", () => {
+    expect(isCourseLandingPageEvent("pos-fisioterapia-dermatofuncional")).toBe(true);
+    expect(isCourseLandingPageEvent("pos-curso-ainda-nao-cadastrado")).toBe(false);
   });
 });

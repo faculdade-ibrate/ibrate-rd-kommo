@@ -63,24 +63,32 @@ const agendaUnits = new Map<string, string>([
   [normalizeText("agenda-de-cursos-em-londrina"), "Londrina"],
 ]);
 
+const courseLandingPages = new Map<string, string>([
+  [
+    normalizeText("pos-fisioterapia-dermatofuncional"),
+    "Pós-Graduação em Fisioterapia Dermatofuncional",
+  ],
+]);
+
 export function routeForConversion(conversion: ParsedRdConversion): ProductRoute | IgnoredRoute | undefined {
   const agendaUnit = agendaUnitFromEvent(conversion.eventIdentifier);
   const normalizedEvent = normalizeText(conversion.eventIdentifier);
+  const landingPageCourse = courseLandingPages.get(normalizedEvent);
   const isWhatsappSite = normalizedEvent === normalizeText("whatsapp-site");
   const isEquilibraPreRegistration = equilibraPreRegistrationEvents.has(normalizedEvent);
   const isEquilibraMessageForm = equilibraMessageFormEvents.has(normalizedEvent);
   const isEquilibraGeneralPreRegistration = equilibraGeneralPreRegistrationEvents.has(normalizedEvent);
   const isEquilibraWhatsapp = equilibraWhatsappEvents.has(normalizedEvent);
-  if (!agendaUnit && !acceptedEvents.has(normalizedEvent)) return undefined;
+  if (!agendaUnit && !landingPageCourse && !acceptedEvents.has(normalizedEvent)) return undefined;
 
   const unit = agendaUnit
     || (isEquilibraPreRegistration || isEquilibraMessageForm || isEquilibraWhatsapp
       ? "Equilibra (Curitiba)"
       : undefined)
-    || (isWhatsappSite
+    || (isWhatsappSite || landingPageCourse
       ? customValue(conversion.customFields, "Unidade da sua escolha", "Unidade")
       : customValue(conversion.customFields, "Unidade"));
-  const course = agendaUnit
+  const course = landingPageCourse || (agendaUnit
     ? customValue(conversion.customFields, "Curso de interesse", "Curso", "Qual curso você está buscando?")
     : isEquilibraPreRegistration
       ? customValue(conversion.customFields, "Curso de Interesse", "Título da página")
@@ -90,7 +98,7 @@ export function routeForConversion(conversion: ParsedRdConversion): ProductRoute
           ? customValue(conversion.customFields, "Qual curso você está buscando?", "Curso de interesse", "Curso")
         : isWhatsappSite
           ? customValue(conversion.customFields, "Qual curso você está buscando?", "Curso de interesse", "Curso")
-          : customValue(conversion.customFields, "Curso", "Qual curso você está buscando?", "Curso de interesse");
+          : customValue(conversion.customFields, "Curso", "Qual curso você está buscando?", "Curso de interesse"));
   const leadSubject = course
     || (isEquilibraGeneralPreRegistration ? "Pré-inscrição Equilibra" : undefined)
     || (isEquilibraMessageForm ? "Contato Equilibra" : undefined);
@@ -100,7 +108,9 @@ export function routeForConversion(conversion: ParsedRdConversion): ProductRoute
   const { pipelineName, stageName } = destination;
 
   return {
-    product: isEquilibraPreRegistration || isEquilibraGeneralPreRegistration
+    product: landingPageCourse
+      ? "Pré-inscrição"
+      : isEquilibraPreRegistration || isEquilibraGeneralPreRegistration
       ? "Pré-inscrição Equilibra"
       : isEquilibraMessageForm
         ? "Contato Equilibra"
@@ -110,11 +120,13 @@ export function routeForConversion(conversion: ParsedRdConversion): ProductRoute
         ? "WhatsApp Site"
         : "Pré-matrícula",
     leadName: [leadSubject, unit].filter(Boolean).join(" | "),
-    source: agendaUnit ? "Landing Page" : "Site",
+    source: agendaUnit || landingPageCourse ? "Landing Page" : "Site",
     pipelineName,
     stageName,
     tags: agendaUnit
       ? ["Pré-matrícula", "Agenda de Cursos"]
+      : landingPageCourse
+        ? ["Site", "Pré-inscrição"]
       : isEquilibraPreRegistration || isEquilibraGeneralPreRegistration
         ? ["Site", "Pré-inscrição", "Equilibra"]
       : isEquilibraMessageForm
@@ -124,14 +136,16 @@ export function routeForConversion(conversion: ParsedRdConversion): ProductRoute
       : isWhatsappSite
         ? ["Site", "WhatsApp"]
         : ["Site", "Pré-matrícula"],
-    derivedCustomFields: agendaUnit || isWhatsappSite || isEquilibraPreRegistration || isEquilibraMessageForm || isEquilibraWhatsapp
+    derivedCustomFields: agendaUnit || landingPageCourse || isWhatsappSite || isEquilibraPreRegistration || isEquilibraMessageForm || isEquilibraWhatsapp
       ? { Curso: course, Unidade: unit }
       : undefined,
-    clearCustomFields: agendaUnit || isWhatsappSite || isEquilibraPreRegistration || isEquilibraMessageForm || isEquilibraWhatsapp
+    clearCustomFields: agendaUnit || landingPageCourse || isWhatsappSite || isEquilibraPreRegistration || isEquilibraMessageForm || isEquilibraWhatsapp
       ? ["Data do Curso"]
       : undefined,
     customFieldNames: agendaUnit
       ? ["Curso de interesse", "Formação"]
+      : landingPageCourse
+        ? ["Unidade da sua escolha", "Formação"]
       : isEquilibraPreRegistration
         ? ["Curso de Interesse", "Formação"]
         : isEquilibraMessageForm
@@ -181,6 +195,10 @@ export function isEquilibraEvent(eventIdentifier: string): boolean {
   const normalizedEvent = normalizeText(eventIdentifier);
   return equilibraMessageFormEvents.has(normalizedEvent)
     || equilibraWhatsappEvents.has(normalizedEvent);
+}
+
+export function isCourseLandingPageEvent(eventIdentifier: string): boolean {
+  return courseLandingPages.has(normalizeText(eventIdentifier));
 }
 
 function agendaUnitFromEvent(eventIdentifier: string): string | undefined {
