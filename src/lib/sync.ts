@@ -1,4 +1,4 @@
-import { routeForConversion } from "@/config/products";
+import { obsoleteManagedTags, routeForConversion } from "@/config/products";
 import { buildLeadCustomFields } from "@/lib/field-mapping";
 import { KommoClient } from "@/lib/kommo";
 import type { ParsedRdConversion } from "@/lib/rd";
@@ -56,6 +56,7 @@ export async function syncConversion(conversion: ParsedRdConversion) {
       statusId,
       [...mapped.fields, ...mapped.fieldsToClear],
       route.tags,
+      obsoleteManagedTags(route.tags),
     );
     if (company) await kommo.ensureCompanyLink("leads", existing.id, company.id);
     return {

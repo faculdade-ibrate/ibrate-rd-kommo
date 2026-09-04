@@ -17,6 +17,22 @@ export type ProductRoute = {
 
 export type IgnoredRoute = { ignoredReason: string };
 
+export const managedLeadTags = [
+  "RD",
+  "Site",
+  "Pré-matrícula",
+  "Agenda de Cursos",
+  "WhatsApp",
+  "Pré-inscrição",
+  "Equilibra",
+  "Contato",
+  "LP",
+] as const;
+
+export function obsoleteManagedTags(activeTags: string[]): string[] {
+  return managedLeadTags.filter((tag) => !activeTags.includes(tag));
+}
+
 const acceptedEvents = new Set([
   normalizeText("Formulário de Pré-matrícula"),
   normalizeText("pre-matricula"),
@@ -128,18 +144,18 @@ export function routeForConversion(conversion: ParsedRdConversion): ProductRoute
     pipelineName,
     stageName,
     tags: agendaUnit
-      ? ["Pré-matrícula", "Agenda de Cursos"]
+      ? ["Agenda de Cursos"]
       : landingPageCourse
-        ? ["Site", "Pré-inscrição", "LP"]
+        ? ["LP"]
       : isEquilibraPreRegistration || isEquilibraGeneralPreRegistration
-        ? ["Site", "Pré-inscrição", "Equilibra"]
+        ? ["Pré-inscrição", "Equilibra"]
       : isEquilibraMessageForm
-        ? ["Site", "Contato", "Equilibra"]
+        ? ["Contato", "Equilibra"]
       : isEquilibraWhatsapp
-        ? ["Site", "WhatsApp", "Equilibra"]
+        ? ["WhatsApp", "Equilibra"]
       : isWhatsappSite
-        ? ["Site", "WhatsApp"]
-        : ["Site", "Pré-matrícula"],
+        ? ["WhatsApp"]
+        : ["Pré-matrícula"],
     derivedCustomFields: agendaUnit || landingPageCourse || isWhatsappSite || isEquilibraPreRegistration || isEquilibraMessageForm || isEquilibraWhatsapp
       ? { Curso: course, Unidade: unit }
       : undefined,

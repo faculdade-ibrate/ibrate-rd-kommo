@@ -197,7 +197,14 @@ export class KommoClient {
     return lead;
   }
 
-  async updateLead(id: number, name: string, statusId: number, customFields: KommoFieldValue[], tags: string[]): Promise<void> {
+  async updateLead(
+    id: number,
+    name: string,
+    statusId: number,
+    customFields: KommoFieldValue[],
+    tags: string[],
+    tagsToDelete: string[] = ["RD"],
+  ): Promise<void> {
     await this.request(`/leads/${id}`, {
       method: "PATCH",
       body: JSON.stringify({
@@ -206,7 +213,7 @@ export class KommoClient {
         custom_fields_values: customFields,
         _embedded: {
           tags_to_add: tags.map((name) => ({ name })),
-          tags_to_delete: [{ name: "RD" }],
+          tags_to_delete: tagsToDelete.map((name) => ({ name })),
         },
       }),
     }, 0, "atualizar oportunidade");

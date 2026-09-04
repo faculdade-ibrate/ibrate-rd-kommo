@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from "vitest";
-import { isAgendaEvent, isCourseLandingPageEvent, isEquilibraEvent, routeForConversion } from "../src/config/products";
+import { isAgendaEvent, isCourseLandingPageEvent, isEquilibraEvent, obsoleteManagedTags, routeForConversion } from "../src/config/products";
 import type { ParsedRdConversion } from "../src/lib/rd";
 
 const originalEnv = { ...process.env };
@@ -25,12 +25,24 @@ function conversion(unit: string, eventIdentifier = "Formulário de Pré-matríc
 }
 
 describe("roteamento da pré-matrícula Ibrate", () => {
+  it("remove classificações antigas e preserva somente as tags ativas", () => {
+    expect(obsoleteManagedTags(["Pré-inscrição", "Equilibra"])).toEqual([
+      "RD",
+      "Site",
+      "Pré-matrícula",
+      "Agenda de Cursos",
+      "WhatsApp",
+      "Contato",
+      "LP",
+    ]);
+  });
+
   it("envia Curitiba para o Funil Curitiba", () => {
     expect(routeForConversion(conversion("Curitiba"))).toMatchObject({
       product: "Pré-matrícula",
       pipelineName: "Funil Curitiba",
       stageName: "NOVOS LEADS RD",
-      tags: ["Site", "Pré-matrícula"],
+      tags: ["Pré-matrícula"],
     });
   });
 
@@ -90,7 +102,7 @@ describe("roteamento da pré-matrícula Ibrate", () => {
       pipelineName: "Funil Equilibra",
       stageName: "NOVOS LEADS RD",
       leadName: "Acupuntura | Equilibra (Curitiba)",
-      tags: ["Site", "WhatsApp"],
+      tags: ["WhatsApp"],
       derivedCustomFields: {
         Curso: "Acupuntura",
         Unidade: "Equilibra (Curitiba)",
@@ -142,7 +154,7 @@ describe("roteamento da pré-matrícula Ibrate", () => {
       pipelineName: "Funil Equilibra",
       stageName: "NOVOS LEADS RD",
       leadName: "Pós-Graduação e MBA em Cosmetologia e Inovação de Cosméticos | Equilibra (Curitiba)",
-      tags: ["Site", "Pré-inscrição", "Equilibra"],
+      tags: ["Pré-inscrição", "Equilibra"],
       derivedCustomFields: {
         Curso: "Pós-Graduação e MBA em Cosmetologia e Inovação de Cosméticos",
         Unidade: "Equilibra (Curitiba)",
@@ -153,9 +165,9 @@ describe("roteamento da pré-matrícula Ibrate", () => {
   });
 
   it.each([
-    ["pre-inscricao-equilibra", "Pré-inscrição Equilibra", ["Site", "Pré-inscrição", "Equilibra"]],
-    ["contato-equilibra", "Contato Equilibra", ["Site", "Contato", "Equilibra"]],
-    ["Contato Equiliba", "Contato Equilibra", ["Site", "Contato", "Equilibra"]],
+    ["pre-inscricao-equilibra", "Pré-inscrição Equilibra", ["Pré-inscrição", "Equilibra"]],
+    ["contato-equilibra", "Contato Equilibra", ["Contato", "Equilibra"]],
+    ["Contato Equiliba", "Contato Equilibra", ["Contato", "Equilibra"]],
   ])("envia %s com Mensagem para o Funil Equilibra", (eventIdentifier, title, tags) => {
     const contact = conversion("Unidade antiga", eventIdentifier);
     contact.customFields = {
@@ -197,7 +209,7 @@ describe("roteamento da pré-matrícula Ibrate", () => {
       pipelineName: "Funil Equilibra",
       stageName: "NOVOS LEADS RD",
       leadName: "Acupuntura | Equilibra (Curitiba)",
-      tags: ["Site", "WhatsApp", "Equilibra"],
+      tags: ["WhatsApp", "Equilibra"],
       derivedCustomFields: {
         Curso: "Acupuntura",
         Unidade: "Equilibra (Curitiba)",
@@ -229,7 +241,7 @@ describe("roteamento da pré-matrícula Ibrate", () => {
       pipelineName: "Funil Interior do PR",
       stageName: "NOVOS LEADS RD",
       leadName: "Fisioterapia Respiratória | Cascavel",
-      tags: ["Pré-matrícula", "Agenda de Cursos"],
+      tags: ["Agenda de Cursos"],
       derivedCustomFields: {
         Curso: "Fisioterapia Respiratória",
         Unidade: "Cascavel",
@@ -304,7 +316,7 @@ describe("roteamento da pré-matrícula Ibrate", () => {
       pipelineName,
       stageName: "NOVOS LEADS RD",
       leadName: `Pós-Graduação em Fisioterapia Dermatofuncional | ${unit}`,
-      tags: ["Site", "Pré-inscrição", "LP"],
+      tags: ["LP"],
       derivedCustomFields: {
         Curso: "Pós-Graduação em Fisioterapia Dermatofuncional",
         Unidade: unit,
