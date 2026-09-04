@@ -164,8 +164,34 @@ describe("roteamento da pré-matrícula Ibrate", () => {
     });
   });
 
+  it("grava o Curso de Interesse da Pré inscrição Equilibra", () => {
+    const preRegistration = conversion("Unidade histórica", "Pré inscrição Equilibra");
+    preRegistration.customFields = {
+      "Curso de Interesse": "Intercorrências na estética",
+      Mensagem: "Gostaria de mais informações.",
+      Formação: "Formação superior completa",
+      Curso: "Curso histórico",
+      Unidade: "Unidade histórica",
+      "Data do Curso": "12/09/2026",
+    };
+
+    expect(routeForConversion(preRegistration)).toMatchObject({
+      product: "Pré-inscrição Equilibra",
+      source: "Site",
+      pipelineName: "Funil Equilibra",
+      stageName: "NOVOS LEADS RD",
+      leadName: "Intercorrências na estética | Equilibra (Curitiba)",
+      tags: ["Pré-inscrição", "Equilibra"],
+      derivedCustomFields: {
+        Curso: "Intercorrências na estética",
+        Unidade: "Equilibra (Curitiba)",
+      },
+      clearCustomFields: ["Data do Curso"],
+      customFieldNames: ["Curso de Interesse", "Título da página", "Mensagem", "Formação"],
+    });
+  });
+
   it.each([
-    ["pre-inscricao-equilibra", "Pré-inscrição Equilibra", ["Pré-inscrição", "Equilibra"]],
     ["contato-equilibra", "Contato Equilibra", ["Contato", "Equilibra"]],
     ["Contato Equiliba", "Contato Equilibra", ["Contato", "Equilibra"]],
   ])("envia %s com Mensagem para o Funil Equilibra", (eventIdentifier, title, tags) => {

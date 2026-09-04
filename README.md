@@ -26,7 +26,8 @@ Aplicação independente que recebe conversões do **Formulário de Pré-matríc
 - No evento `whatsapp-site`, `Qual curso você está buscando?` e `Unidade da sua escolha` têm prioridade sobre dados históricos da RD; `Data do Curso` é limpa por não existir nesse formulário.
 - O campo `Formação` é aceito na pré-matrícula, agendas, WhatsApp da Ibrate e em todas as entradas da Equilibra.
 - Na `Pré inscrição cursos`, `Curso de Interesse` é gravado como `Curso`, a unidade é fixada como `Equilibra (Curitiba)` e `Mensagem` é ignorada.
-- Em `Pré inscrição Equilibra` e `Contato Equilibra`, somente `Mensagem` é gravada como campo personalizado; a unidade é fixada como `Equilibra (Curitiba)` e dados históricos de curso, formação e data são ignorados.
+- Em `Pré inscrição Equilibra`, `Curso de Interesse` é gravado como `Curso`; `Mensagem` e `Formação` também são gravadas quando presentes, e a unidade é fixada como `Equilibra (Curitiba)`.
+- Em `Contato Equilibra`, `Mensagem` e `Formação` são gravadas quando presentes; a unidade é fixada como `Equilibra (Curitiba)` e dados históricos de curso e data são ignorados.
 - No `whatsapp-site-equilibra`, `Qual curso você está buscando?` é gravado como `Curso`; a unidade é fixada como `Equilibra (Curitiba)` e dados históricos são ignorados.
 - Na LP `pos-fisioterapia-dermatofuncional`, o curso é fixado como `Pós-Graduação em Fisioterapia Dermatofuncional`; `Formação` e `Unidade da sua escolha` vêm do formulário e definem os campos e o funil regional.
 - Na pré-matrícula Ibrate, a tag enviada é `Pré-matrícula`.
